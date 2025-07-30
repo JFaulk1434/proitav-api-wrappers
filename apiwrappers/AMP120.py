@@ -259,7 +259,7 @@ class AMP120_Device:
 
 
 if __name__ == "__main__":
-    amp = AMP120_Device(ip="192.168.50.148", debug=True)
+    amp = AMP120_Device(ip="10.0.110.201", debug=False)
     # amp.set_dsp_mute("out", "dante", "off")
     success = 0
     for i in range(20):

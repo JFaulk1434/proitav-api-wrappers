@@ -699,7 +699,7 @@ class FSC640_Device:
 if __name__ == "__main__":
     import time
 
-    fsc = FSC640_Device("10.0.40.10")
+    fsc = FSC640_Device("10.0.40.2")
     fsc.connect()
     commands = [
         fsc.get_device_info(),

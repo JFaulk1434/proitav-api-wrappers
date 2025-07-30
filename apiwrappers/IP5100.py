@@ -251,7 +251,7 @@ class IP5100_Device:
         """
         Get the subnet mask of the device.
         """
-        response = self.send("ifconfig|grep Mask|sed -n 1p|awk -F " ":" " '{print $4}'")
+        response = self.send("ifconfig|grep Mask|sed -n 1p|awk -F : '{print $4}'")
         if "not defined" in response.lower():
             self.netmask = None
         else:
@@ -766,32 +766,34 @@ class Decoder5100_Device(IP5100_Device):
         """
         Set the output timing of the device.
         0: Pass-Through
-        1: Pass-Through
-        2: Pass-Through (Strict Mode)
-        3: Base on EDID
-        4: Ultra HD 2160p60
-        5: Ultra HD 2160p50
-        6: Ultra HD 2160p30
-        7: Ultra HD 2160p25
-        8: Ultra HD 2160p24
-        9: Full HD 1080p60
-        10: Full HD 1080p50
-        11: Full HD 1080p30
-        12: HD 1080p25
-        13: Full HD 1080p24
-        14: HD 720p60
-        15: HD 720p50
-        16: HD 720p30
-        17: HD 720p25
-        18: HD 720p24
-        19: WXGA 1366x768@60
-        20: WXGA+ 1440x900@60
-        21: WUXGA 1920x1200@60
-        22: SXGA+ 1400x1050@60
+        1: Pass-Through (Strict Mode)
+        2: Base on EDID
+        3: Ultra HD 2160p60
+        4: Ultra HD 2160p50
+        5: Ultra HD 2160p30
+        6: Ultra HD 2160p25
+        7: Ultra HD 2160p24
+        8: Full HD 1080p60
+        9: Full HD 1080p50
+        10: Full HD 1080p30
+        11: Full HD 1080p25
+        12: Full HD 1080p24
+        13: HD 720p60
+        14: HD 720p50
+        15: HD 720p30
+        16: HD 720p25
+        17: HD 720p24
+        18: WXGA 1366x768@60
+        19: WXGA+ 1440x900@60
+        20: WUXGA 1920x1200@60
+        21: SXGA+ 1400x1050@60
 
         """
         value = self.timing[value]["hex"]
-        return self.send(f"astparam s v_output_timing_convert {value}")
+        # return self.send(f"astparam s v_output_timing_convert {value}")
+        return self.send(
+            f"echo {value} > /sys/devices/platform/videoip/output_timing_convert"
+        )
 
     def set_vwall_disable(self):
         """
@@ -974,16 +976,28 @@ class Decoder5100_Device(IP5100_Device):
 
 
 if __name__ == "__main__":
-    # encoder = Encoder5100("10.0.50.2")
-    in1 = "SET SW in1 out"
-    in2 = "SET SW in2 out"
+    device_ip = "10.0.30.30"
+    device_general = IP5100_Device(device_ip)
+    device_encoder = Encoder5100_Device(device_ip)
+    device_decoder = Decoder5100_Device(device_ip)
 
-    # print(encoder.send_serial_data("115200-8n1", in1))
-    decoder = Decoder5100_Device("192.168.50.144")
-    decoder2 = Decoder5100_Device("192.168.50.147")
-    # decoder.cec_onetouch_play()
-    # decoder2.cec_onetouch_play()
-    decoder.cec_send("40:04")
-    decoder2.cec_send("40:04")
-    # decoder.cec_send("40 04")
-    # decoder.cec_send("40:04")
+    commands_general = [
+        device_general.get_alias(),
+        device_general.get_gateway_ip(),
+        device_general.get_info(),
+        device_general.get_mac(),
+        device_general.get_model_version(),
+        device_general.get_multicast_ip(),
+        device_general.get_subnet_mask(),
+    ]
+
+    commands_encoder = [
+        device_encoder.get_audio_input_info(),
+        device_encoder.get_video_input_info(),
+        device_encoder.get_video_specs(),
+    ]
+
+    for command in commands_general:
+        print(command)
+    for command in commands_encoder:
+        print(command)

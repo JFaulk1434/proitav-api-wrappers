@@ -24,7 +24,7 @@ class MS0402N011_Device:
 
                 # Handle login
                 self.tn.read_very_eager()
-                self.tn.read_until(b"Login:", timeout=1)
+                self.tn.read_until(b"Login: ", timeout=1)
                 self.tn.write(self.user.encode("ascii") + b"\r\n")
                 self.tn.read_until(b"Password:", timeout=1)
                 # print("Received the password prompt")
@@ -43,7 +43,7 @@ class MS0402N011_Device:
                         self.close()
                         return "Username or password error."
 
-                    if b"Welcome to use MS42-Switcher control system" in response:
+                    if b"Welcome! " in response:
                         # print("Connected successfully.")
                         # Flush the buffer to remove any remaining welcome message data
                         time.sleep(
@@ -572,13 +572,81 @@ class MS0402N011_Device:
         return self.send_command("GET LOGDBG")
 
 
-# Example usage
+def print_all_device_info(device):
+    """Prints all available device information using get commands
+
+    Args:
+        device: MS0402N011_Device instance
+    """
+    print("\n=== Device Information ===")
+    print("\nFirmware Versions:")
+    print("Main:", device.get_firmware_version("main"))
+    print("ARM:", device.get_firmware_version("arm"))
+    print("USB-C Video:", device.get_firmware_version("usb_c_video"))
+    print("HDMI:", device.get_firmware_version("hdmi"))
+    print("USB-C CC:", device.get_firmware_version("usb_c_cc"))
+    print("HDBT 3.0:", device.get_firmware_version("hdbt_3.0"))
+    print("CPLD:", device.get_firmware_version("cpld"))
+
+    print("\nNetwork Settings:")
+    print("IP Mode:", device.get_ip_mode())
+    print("IP Address Info:", device.get_ip_address())
+    print("NIC Status:", device.get_NIC_status())
+    print("VLAN Enable:", device.get_vlan_enable())
+
+    print("\nVideo Settings:")
+    print("Video Input Status:", device.get_vidin_status())
+    print("Video Input HDCP:", device.get_vidin_HDCP())
+    print("Video Output HDCP:", device.get_vidout_HDCP())
+    print("Scaler Output:", device.get_scaler_output())
+
+    print("\nSwitch Settings:")
+    print("Input OUT1:", device.get_input("OUT1"))
+    print("Input OUT2:", device.get_input("OUT2"))
+
+    print("\nAutoswitch Settings:")
+    print("Autoswitch:", device.get_autoswitch())
+    print("Autoswitch Port OUT1:", device.get_autoswitch_port("OUT1"))
+    print("Autoswitch Port OUT2:", device.get_autoswitch_port("OUT2"))
+    print("USBA Autoswitch:", device.get_usba_autoswitch())
+    print("Video Autoswitch Mode:", device.get_video_autoswitch())
+    print("LIFO Setting:", device.get_lifo())
+
+    print("\nCEC Settings:")
+    print("CEC Auto OUT1:", device.get_cec_auto("OUT1"))
+    print("CEC Auto OUT2:", device.get_cec_auto("OUT2"))
+    print("CEC Power Delay OUT1:", device.get_cec_power_delay("OUT1"))
+    print("CEC Power Delay OUT2:", device.get_cec_power_delay("OUT2"))
+    print("CEC Power On Command OUT1:", device.get_cec_poweron_command("OUT1"))
+    print("CEC Power On Command OUT2:", device.get_cec_poweron_command("OUT2"))
+    print("CEC Power Off Command OUT1:", device.get_cec_poweroff_command("OUT1"))
+    print("CEC Power Off Command OUT2:", device.get_cec_poweroff_command("OUT2"))
+
+    print("\nRS232 Settings:")
+    print("RS232 Baud Rate:", device.get_rs232_baud())
+    print("RS232 Auto Power:", device.get_rs232_autopower())
+    print("RS232 Auto Power Delay:", device.get_rs232_autopower_delay())
+    print("RS232 Commands:", device.get_rs232_command())
+
+    print("\nUSB Settings:")
+    print("USB Work Mode:", device.get_usb_work_mode())
+    print("USB Switch:", device.get_usb_switch())
+    print("USB NIC Status:", device.get_usb_NIC("ALL"))
+    print("USB Port Priority:", device.get_usb_port_priority())
+
+    print("\nAudio Settings:")
+    print("Audio Mute Status:", device.get_audio_mute())
+    print("Audio Switch:", device.get_audio_switch())
+
+    print("\nEDID Settings:")
+    print("EDID Mode:", device.get_edid_mode())
+    print("EDID Output 1:", device.get_edid_output("OUT1"))
+    print("EDID Output 2:", device.get_edid_output("OUT2"))
+
+
+# Example usage:
 if __name__ == "__main__":
     device = MS0402N011_Device(
-        ip="192.168.50.104", user="admin", password="admin", debug=False, verbose=False
+        ip="10.0.50.9", user="admin", password="admin", debug=False, verbose=False
     )
-    print(device.get_firmware_version())
-    print(device.get_input("OUT1"))
-    print(device.get_input("OUT2"))
-    print(device.get_NIC_status())
-    print(device.get_usbc_dp_mode())
+    print_all_device_info(device)
