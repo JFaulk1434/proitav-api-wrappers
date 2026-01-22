@@ -1,0 +1,819 @@
+# MS0402_N011 Device API Documentation
+# Based on MS0402_N011_Device wrapper methods
+
+api_info:
+  name: "MS0402_N011 Device API"
+  version: "1.0"
+  device_model: "MS0402_N011"
+  firmware_version: "MAIN 1.0.3"
+  connection_type: "Telnet (Port 23)"
+  authentication:
+    username: "admin"
+    password: "admin"
+    timeout: 5
+    max_retries: 2
+
+commands:
+  system:
+    description: "System control and information commands"
+    
+    help:
+      command: "help"
+      description: "Get available API commands"
+      response_format: "string"
+      example_response: "Welcome to use RAV-MS04X2HU-Tx /*System Info*/ ..."
+      status: "working"
+      
+    firmware_version:
+      command: "get ver {prm}"
+      description: "Get firmware version for specified component"
+      parameters:
+        prm: "Component type: main, arm, usb_c_video, hdmi, usb_c_cc, hdbt_3.0, cpld, all"
+      response_format: "string"
+      example_response: "MAIN 1.0.3"
+      status: "working"
+      
+    factory_reset:
+      command: "reset"
+      description: "Reset device to factory defaults"
+      response_format: "string"
+      status: "not_tested"
+      
+    reboot:
+      command: "reboot"
+      description: "Reboot the device"
+      response_format: "string"
+      status: "not_tested"
+
+  network:
+    description: "Network configuration commands"
+    
+    ip_address:
+      command: "GET IPADDR"
+      description: "Get IP address configuration"
+      response_format: "string"
+      example_response: "IPADDR DHCP ip4addr:10.0.50.15 netmask: 255.255.255.0 gateway: 10.0.50.1"
+      status: "working"
+      
+    nic_status:
+      command: "GET NIC_STATUS"
+      description: "Get Network Interface Card status"
+      response_format: "string"
+      response_values:
+        "ON": "Network interface enabled"
+        "OFF": "Network interface disabled"
+      example_response: "NIC_STATUS ON"
+      status: "working"
+      
+    vlan_enable:
+      command: "GET VLAN_ENABLE"
+      description: "Get VLAN enable status"
+      response_format: "string"
+      response_values:
+        "ON": "VLAN enabled"
+        "OFF": "VLAN disabled"
+      example_response: "VLAN_ENABLE OFF"
+      status: "working"
+
+  video:
+    description: "Video input/output configuration commands"
+    
+    vidin_status:
+      command: "GET VIDIN_SIG {input}"
+      description: "Get video input signal status"
+      parameters:
+        input: "Input port: IN1, IN2, IN3, IN4, ALL"
+      response_format: "string"
+      example_response: "VIDIN_SIG IN1 VALID"
+      status: "working"
+      
+    vidin_hdcp:
+      command: "GET VIDIN_HDCP {input}"
+      description: "Get video input HDCP status"
+      parameters:
+        input: "Input port: IN1, IN2, IN3, IN4, ALL"
+      response_format: "string"
+      example_response: "VIDIN_HDCP IN1 ON"
+      status: "working"
+      
+    vidout_hdcp:
+      command: "GET HDCP {output}"
+      description: "Get video output HDCP status"
+      parameters:
+        output: "Output port: OUT1, OUT2, OUT3, OUT4, ALL"
+      response_format: "string"
+      example_response: "HDCP OUT1 follow"
+      status: "working"
+      
+    scaler_output:
+      command: "GET SCALER {output}"
+      description: "Get scaler output status"
+      parameters:
+        output: "Output port: OUT1, OUT2, OUT3, OUT4, ALL"
+      response_format: "string"
+      example_response: "SCALER OUT1 ON"
+      status: "working"
+
+  switching:
+    description: "Video switching and routing commands"
+    
+    input:
+      command: "GET SW {output}"
+      description: "Get input to output mapping"
+      parameters:
+        output: "Output port: OUT1, OUT2"
+      response_format: "string"
+      example_response: "SW OUT1 IN4"
+      status: "working"
+      
+    autoswitch:
+      command: "GET AUTOSW_FN"
+      description: "Get autoswitch function status"
+      response_format: "string"
+      response_values:
+        "ON": "Autoswitch enabled"
+        "OFF": "Autoswitch disabled"
+      example_response: "AUTOSW_FN ON"
+      status: "working"
+      
+    autoswitch_port:
+      command: "GET AUTOSW_PORT {output}"
+      description: "Get autoswitch port status"
+      parameters:
+        output: "Output port: OUT1, OUT2"
+      response_format: "string"
+      example_response: "AUTOSW_PORT OUT1 ON"
+      status: "working"
+      
+    usba_autoswitch:
+      command: "GET USBASW_FN"
+      description: "Get USBA autoswitch status"
+      response_format: "string"
+      response_values:
+        "ON": "USBA autoswitch enabled"
+        "OFF": "USBA autoswitch disabled"
+      example_response: "USBASW_FN ON"
+      status: "working"
+      
+    video_autoswitch:
+      command: "GET AUTOSW_MD"
+      description: "Get video autoswitch mode"
+      response_format: "string"
+      response_values:
+        "LIFO": "Last In First Out mode"
+        "PRIORITY": "Priority mode"
+      example_response: "AUTOSW_MD LIFO"
+      status: "working"
+      
+    lifo:
+      command: "GET LIFO_SO"
+      description: "Get LIFO setting"
+      response_format: "string"
+      response_values:
+        "ON": "LIFO enabled"
+        "OFF": "LIFO disabled"
+      example_response: "LIFO_SO ON"
+      status: "working"
+
+  cec:
+    description: "CEC (Consumer Electronics Control) commands"
+    
+    cec_auto:
+      command: "GET AUTOCEC_FN {out}"
+      description: "Get CEC auto power status"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+      response_format: "string"
+      example_response: "AUTOCEC_FN OUT1 ON"
+      status: "working"
+      
+    cec_power_delay:
+      command: "GET AUTOCEC_D {out}"
+      description: "Get CEC power delay"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+      response_format: "string"
+      example_response: "AUTOCEC_D OUT1 120"
+      status: "working"
+      
+    cec_poweron_command:
+      command: "GET CECCMD_EDIT {out} pwron"
+      description: "Get CEC power on command"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+      response_format: "string"
+      example_response: "CECCMD_EDIT OUT1 PWRON 40 04"
+      status: "working"
+      
+    cec_poweroff_command:
+      command: "GET CECCMD_EDIT {out} pwroff"
+      description: "Get CEC power off command"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+      response_format: "string"
+      example_response: "CECCMD_EDIT OUT1 PWROFF 40 36"
+      status: "working"
+
+  rs232:
+    description: "RS232 serial communication commands"
+    
+    rs232_baud:
+      command: "GET UART_B UART1"
+      description: "Get RS232 baud rate"
+      response_format: "string"
+      response_values:
+        "9600": "9600 baud"
+        "19200": "19200 baud"
+        "38400": "38400 baud"
+        "57600": "57600 baud"
+        "115200": "115200 baud"
+      example_response: "UART_B UART1 115200"
+      status: "working"
+      
+    rs232_autopower:
+      command: "GET UARTPWR_FN UART1"
+      description: "Get RS232 auto power status"
+      response_format: "string"
+      response_values:
+        "ON": "Auto power enabled"
+        "OFF": "Auto power disabled"
+      example_response: "UARTPWR_FN UART1 ON"
+      status: "working"
+      
+    rs232_autopower_delay:
+      command: "GET UARTPWR_D UART1"
+      description: "Get RS232 auto power delay"
+      response_format: "string"
+      example_response: "UARTPWR_D UART1 120"
+      status: "working"
+      
+    rs232_command:
+      command: "GET UART_CMD UART1"
+      description: "Get RS232 commands"
+      response_format: "string"
+      example_response: "UART_CMD UART1 poweron str NULL"
+      status: "working"
+
+  usb:
+    description: "USB configuration commands"
+    
+    usb_work_mode:
+      command: "GET USB_M"
+      description: "Get USB work mode"
+      response_format: "string"
+      response_values:
+        "FOLLOW1": "Follow output 1"
+        "FOLLOW2": "Follow output 2"
+        "INDEPENDENT": "Independent mode"
+      example_response: "USB_M FOLLOW1"
+      status: "working"
+      
+    usb_switch:
+      command: "GET USBSW"
+      description: "Get USB switch status"
+      response_format: "string"
+      example_response: "USBSW IN4"
+      status: "working"
+      
+    usb_nic:
+      command: "GET USBNIC {input}"
+      description: "Get USB NIC status"
+      parameters:
+        input: "Input port: IN1, IN2, IN3, IN4, ALL"
+      response_format: "string"
+      example_response: "USBNIC IN1 ON"
+      status: "working"
+      
+    usb_port_priority:
+      command: "GET USB_P {input}"
+      description: "Get USB port priority"
+      parameters:
+        input: "Input port: IN1, IN2, IN3, IN4, ALL"
+      response_format: "string"
+      example_response: "USB_P IN1 4"
+      status: "working"
+
+  audio:
+    description: "Audio configuration commands"
+    
+    audio_mute:
+      command: "GET AUD_MUTE {output}"
+      description: "Get audio mute status"
+      parameters:
+        output: "Output port: OUT1, OUT2, DeEmbed, ALL"
+      response_format: "string"
+      example_response: "AUD_MUTE HDMIOUT1 OFF"
+      status: "working"
+      
+    audio_switch:
+      command: "GET AUDSW"
+      description: "Get audio switch status"
+      response_format: "string"
+      example_response: "AUDSW OUT1"
+      status: "working"
+
+  edid:
+    description: "EDID (Extended Display Identification Data) commands"
+    
+    edid_mode:
+      command: "GET EDID {input}"
+      description: "Get EDID mode"
+      parameters:
+        input: "Input port: IN1, IN2, IN3, IN4, ALL"
+      response_format: "string"
+      response_values:
+        "1": "Fixed 4K@60Hz 2.0ch (Default)"
+        "2": "Copy from OUT1"
+        "3": "Copy from OUT2"
+        "4": "Fixed 4K@60Hz 7.1ch"
+        "5": "Fixed 4K@30Hz 2.0ch"
+        "6": "Fixed 4K@30Hz 7.1ch"
+        "7": "1080P@60 2.0ch"
+        "8": "1080P@60 5.1ch"
+        "9": "1080P@60 7.1ch"
+        "10": "Custom EDID 1"
+        "11": "Custom EDID 2"
+      example_response: "EDID IN1 1"
+      status: "working"
+      
+    edid_output:
+      command: "GET EDID_R {output}"
+      description: "Get EDID output data"
+      parameters:
+        output: "Output port: OUT1, OUT2"
+      response_format: "string"
+      example_response: "EDID_R OUT1 BLOCK0 00ffffffffffff004c2d..."
+      status: "working"
+
+  usbc:
+    description: "USB-C configuration commands"
+    
+    usbc_sst_mode:
+      command: "GET USBC3_SST"
+      description: "Get USB-C SST mode"
+      response_format: "string"
+      response_values:
+        "ON": "SST mode enabled"
+        "OFF": "SST mode disabled"
+      example_response: "USBC3_SST ON"
+      status: "working"
+      
+    usbc_dp_mode:
+      command: "GET USBC4_DM"
+      description: "Get USB-C DP mode"
+      response_format: "string"
+      response_values:
+        "SST": "Single Stream Transport"
+        "MST": "Multi Stream Transport"
+      example_response: "USBC4_DM SST"
+      status: "working"
+      
+    usbc_strategy:
+      command: "GET USBC4_STRA"
+      description: "Get USB-C strategy"
+      response_format: "string"
+      response_values:
+        "MODE1": "1 USBC + 2 HDMI"
+        "MODE2": "2 USBC + 1 HDMI"
+      example_response: "USBC4_STRA MODE1"
+      status: "working"
+
+  debug:
+    description: "Debug and logging commands"
+    
+    debug_mode:
+      command: "GET LOGDBG"
+      description: "Get debug mode status"
+      response_format: "string"
+      response_values:
+        "ON": "Debug mode enabled"
+        "OFF": "Debug mode disabled"
+      example_response: "LOGDBG OFF"
+      status: "working"
+
+# SET Commands (Configuration Commands)
+set_commands:
+  description: "Commands for setting/configuration (not tested in get command test)"
+  
+  switching:
+    set_input:
+      command: "SET SW {output} {input}"
+      description: "Set input to output mapping"
+      parameters:
+        output: "Output port: OUT1, OUT2"
+        input: "Input port: IN1, IN2, IN3, IN4"
+      status: "not_tested"
+      
+    set_autoswitch:
+      command: "SET AUTOSW_FN {on_off}"
+      description: "Set autoswitch function"
+      parameters:
+        on_off: "ON or OFF"
+      status: "not_tested"
+      
+    set_autoswitch_port:
+      command: "SET AUTOSW_PORT {output} {on_off}"
+      description: "Set autoswitch port status"
+      parameters:
+        output: "Output port: OUT1, OUT2"
+        on_off: "ON or OFF"
+      status: "not_tested"
+      
+    set_usba_autoswitch:
+      command: "SET USBASW_FN {on_off}"
+      description: "Set USBA autoswitch status"
+      parameters:
+        on_off: "ON or OFF"
+      status: "not_tested"
+      
+    set_video_autoswitch:
+      command: "SET AUTOSW_MD {status}"
+      description: "Set video autoswitch mode"
+      parameters:
+        status: "LIFO or PRIORITY"
+      status: "not_tested"
+      
+    set_lifo:
+      command: "SET LIFO_SO {on_off}"
+      description: "Set LIFO setting"
+      parameters:
+        on_off: "ON or OFF"
+      status: "not_tested"
+
+  cec:
+    set_cec_power:
+      command: "SET CEC_PWR {out} {on_off}"
+      description: "Set CEC/PWR On/Off"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+        on_off: "ON or OFF"
+      status: "not_tested"
+      
+    set_cec_auto:
+      command: "SET AUTOCEC_FN {out} {on_off}"
+      description: "Set CEC Auto Power On/Off"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+        on_off: "ON or OFF"
+      status: "not_tested"
+      
+    set_cec_power_delay:
+      command: "SET AUTOCEC_D {out} {minutes}"
+      description: "Set CEC auto power delay"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+        minutes: "Delay in minutes (1-30)"
+      status: "not_tested"
+      
+    set_cec_volup:
+      command: "SET CEC_VOL_INC {out}"
+      description: "Set CEC volume increase"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+      status: "not_tested"
+      
+    set_cec_voldown:
+      command: "SET CEC_VOL_DEC {out}"
+      description: "Set CEC volume decrease"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+      status: "not_tested"
+      
+    set_cec_volmute:
+      command: "SET CEC_VOL_MUTE {out}"
+      description: "Set CEC volume mute"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+      status: "not_tested"
+      
+    set_cec_poweron_command:
+      command: "SET CECCMD_EDIT {out} pwron {command}"
+      description: "Set CEC power on command"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+        command: "Hex value less than 16"
+      status: "not_tested"
+      
+    set_cec_poweroff_command:
+      command: "SET CECCMD_EDIT {out} pwroff {command}"
+      description: "Set CEC power off command"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+        command: "Hex value less than 16"
+      status: "not_tested"
+      
+    set_cec_send:
+      command: "SET CEC_CMD {out} {command}"
+      description: "Send CEC command"
+      parameters:
+        out: "Output port: OUT1, OUT2, ALL"
+        command: "Hex value less than 16"
+      status: "not_tested"
+
+  rs232:
+    set_rs232_baud:
+      command: "SET UART_B UART1 {baud}"
+      description: "Set RS232 baud rate"
+      parameters:
+        baud: "9600, 19200, 38400, 57600, 115200"
+      status: "not_tested"
+      
+    set_rs232_autopower:
+      command: "SET UARTPWR_FN UART1 {on_off}"
+      description: "Set RS232 Auto Power On/Off"
+      parameters:
+        on_off: "ON or OFF"
+      status: "not_tested"
+      
+    set_rs232_autopower_delay:
+      command: "SET UARTPWR_D UART1 {minutes}"
+      description: "Set RS232 auto power delay"
+      parameters:
+        minutes: "Delay in minutes (1-30)"
+      status: "not_tested"
+      
+    set_rs232_command:
+      command: "SET UART_CMD UART1 {task} {type} {command}"
+      description: "Set RS232 command"
+      parameters:
+        task: "poweron, poweroff, volumemute, volumeunmute, volumeup, volumedown"
+        type: "hex or string"
+        command: "Hex value less than 48 or string"
+      status: "not_tested"
+      
+    set_rs232_command_send:
+      command: "SET UART_CMD_S UART1 {task}"
+      description: "Send RS232 command"
+      parameters:
+        task: "poweron, poweroff, volumemute, volumeunmute, volumeup, volumedown"
+      status: "not_tested"
+      
+    set_rs232_send:
+      command: "SET UART_S UART1 {type} {command}"
+      description: "Send RS232 command"
+      parameters:
+        type: "hex or string"
+        command: "Hex value less than 36 or string"
+      status: "not_tested"
+
+  network:
+    set_ip_mode:
+      command: "SET IP MODE {mode}"
+      description: "Set IP mode"
+      parameters:
+        mode: "static or dhcp"
+      status: "not_tested"
+      
+    set_ip_address:
+      command: "SET IPADDR {ip} {subnet} {gateway}"
+      description: "Set IP address configuration"
+      parameters:
+        ip: "IP address"
+        subnet: "Subnet mask"
+        gateway: "Gateway address"
+      status: "not_tested"
+      
+    set_nic_status:
+      command: "SET NIC_STATUS {on_off}"
+      description: "Set Network Interface Card status"
+      parameters:
+        on_off: "ON or OFF"
+      status: "not_tested"
+      
+    set_vlan_enable:
+      command: "SET VLAN_ENABLE {on_off}"
+      description: "Set VLAN status"
+      parameters:
+        on_off: "ON or OFF"
+      status: "not_tested"
+
+  video:
+    set_vidin_hdcp:
+      command: "SET VIDIN_HDCP_FN {input} {on_off}"
+      description: "Set video input HDCP status"
+      parameters:
+        input: "Input port: IN1, IN2, IN3, IN4, ALL"
+        on_off: "ON or OFF"
+      status: "not_tested"
+      
+    set_scaler_output:
+      command: "SET SCALER {output} {on_off}"
+      description: "Set scaler output"
+      parameters:
+        output: "Output port: OUT1, OUT2, OUT3, OUT4, ALL"
+        on_off: "ON, OFF, or force"
+      status: "not_tested"
+
+  usb:
+    set_usb_work_mode:
+      command: "SET USB_M {mode}"
+      description: "Set USB work mode"
+      parameters:
+        mode: "FOLLOW1, FOLLOW2, INDEPENDENT"
+      status: "not_tested"
+      
+    set_usb_switch:
+      command: "SET USBSW {input}"
+      description: "Set USB switch"
+      parameters:
+        input: "Input port: IN1, IN2, IN3, IN4"
+      status: "not_tested"
+      
+    set_usb_nic:
+      command: "SET USBNIC {input} {on_off}"
+      description: "Set USB NIC status"
+      parameters:
+        input: "Input port: IN1, IN2, IN3, IN4, ALL"
+        on_off: "ON or OFF"
+      status: "not_tested"
+      
+    set_video_port_priority:
+      command: "SET VIDEO_P {output} {input} {priority}"
+      description: "Set video port priority"
+      parameters:
+        output: "Output port: OUT1, OUT2, OUT3, OUT4, ALL"
+        input: "Input port: IN1, IN2, IN3, IN4, ALL"
+        priority: "0-4 (0=ignored, 1=high, 4=low)"
+      status: "not_tested"
+      
+    set_usb_port_priority:
+      command: "SET USB_P {input} {priority}"
+      description: "Set USB port priority"
+      parameters:
+        input: "Input port: IN1, IN2, IN3, IN4, ALL"
+        priority: "0-4 (0=ignored, 1=high, 4=low)"
+      status: "not_tested"
+
+  audio:
+    set_audio_mute:
+      command: "SET AUD_MUTE {output} {on_off}"
+      description: "Set audio mute status"
+      parameters:
+        output: "Output port: OUT1, OUT2, DeEmbed, ALL"
+        on_off: "ON or OFF"
+      status: "not_tested"
+      
+    set_audio_switch:
+      command: "SET AUDSW {output}"
+      description: "Set audio switch"
+      parameters:
+        output: "Output port: OUT1, OUT2"
+      status: "not_tested"
+
+  edid:
+    set_edid_mode:
+      command: "SET EDID_M {input} {mode}"
+      description: "Set EDID mode"
+      parameters:
+        input: "Input port: IN1, IN2, IN3, IN4, ALL"
+        mode: "1-11 (see edid_mode response_values)"
+      status: "not_tested"
+
+  usbc:
+    set_usbc_sst_mode:
+      command: "SET USBC3_SST {on_off}"
+      description: "Set USB-C SST mode"
+      parameters:
+        on_off: "ON or OFF"
+      status: "not_tested"
+      
+    set_usbc_dp_mode:
+      command: "SET USBC4_DM {mode}"
+      description: "Set USB-C DP mode"
+      parameters:
+        mode: "SST or MST"
+      status: "not_tested"
+      
+    set_usbc_strategy:
+      command: "SET USBC4_STRA {mode}"
+      description: "Set USB-C strategy"
+      parameters:
+        mode: "MODE1 or MODE2"
+      status: "not_tested"
+
+  system:
+    set_telnet_login:
+      command: "SET tel_usnm {old_user} {new_user} tel_pwd {old_password} {new_password}"
+      description: "Set telnet login credentials"
+      parameters:
+        old_user: "Current username"
+        new_user: "New username"
+        old_password: "Current password"
+        new_password: "New password"
+      status: "not_tested"
+      
+    set_web_user_pass:
+      command: "SET WEB_USNM {old_user} {new_user} WEB_PWD {old_password} {new_password}"
+      description: "Set web user and password"
+      parameters:
+        old_user: "Current username"
+        new_user: "New username"
+        old_password: "Current password"
+        new_password: "New password"
+      status: "not_tested"
+      
+    set_debug_mode:
+      command: "SET LOGDBG {on_off}"
+      description: "Set debug mode"
+      parameters:
+        on_off: "ON or OFF"
+      status: "not_tested"
+
+# Test Results Summary
+test_summary:
+  total_get_commands_tested: 35
+  successful: 35
+  failed: 0
+  success_rate: "100.0%"
+  
+  working_categories:
+    - "System Information (2/2)"
+    - "Network Settings (3/3)"
+    - "Video I/O (4/4)"
+    - "Switching (6/6)"
+    - "CEC (4/4)"
+    - "RS232 (4/4)"
+    - "USB (4/4)"
+    - "Audio (2/2)"
+    - "EDID (2/2)"
+    - "USB-C (3/3)"
+    - "Debug (1/1)"
+
+# Connection Information
+connection:
+  protocol: "Telnet"
+  port: 23
+  timeout: 5
+  max_retries: 2
+  authentication:
+    username: "admin"
+    password: "admin"
+  connection_sequence:
+    1: "Connect to device on port 23"
+    2: "Wait for 'Login: ' prompt"
+    3: "Send username"
+    4: "Wait for 'Password:' prompt"
+    5: "Send password twice"
+    6: "Wait for 'Welcome to use MS42-Switcher control system' message"
+
+# Usage Examples
+usage_examples:
+  basic_device_info:
+    description: "Get basic device information"
+    commands:
+      - "help"
+      - "get ver main"
+      - "get ver arm"
+      - "get ver hdmi"
+      
+  network_status:
+    description: "Get network configuration"
+    commands:
+      - "GET IPADDR"
+      - "GET NIC_STATUS"
+      - "GET VLAN_ENABLE"
+      
+  video_status:
+    description: "Get video input/output status"
+    commands:
+      - "GET VIDIN_SIG ALL"
+      - "GET VIDIN_HDCP ALL"
+      - "GET HDCP ALL"
+      - "GET SCALER ALL"
+      
+  switching_status:
+    description: "Get switching configuration"
+    commands:
+      - "GET SW OUT1"
+      - "GET SW OUT2"
+      - "GET AUTOSW_FN"
+      - "GET AUTOSW_PORT OUT1"
+      - "GET AUTOSW_PORT OUT2"
+      
+  cec_status:
+    description: "Get CEC configuration"
+    commands:
+      - "GET AUTOCEC_FN OUT1"
+      - "GET AUTOCEC_FN OUT2"
+      - "GET AUTOCEC_D OUT1"
+      - "GET AUTOCEC_D OUT2"
+      
+  usb_status:
+    description: "Get USB configuration"
+    commands:
+      - "GET USB_M"
+      - "GET USBSW"
+      - "GET USBNIC ALL"
+      - "GET USB_P ALL"
+
+# Notes
+notes:
+  - "All GET commands return current values of settings"
+  - "Parameters in curly braces {} are placeholders for actual values"
+  - "Boolean values are represented as ON/OFF"
+  - "Port values are: IN1, IN2, IN3, IN4 for inputs and OUT1, OUT2, OUT3, OUT4 for outputs"
+  - "ALL can be used as a parameter to get status for all ports"
+  - "The device supports both GET (query) and SET (configure) command sets"
+  - "All GET commands tested successfully with 100% success rate"
+  - "SET commands are documented but not tested in the get command test"
+  - "Firmware version command supports multiple component types: main, arm, usb_c_video, hdmi, usb_c_cc, hdbt_3.0, cpld, all"

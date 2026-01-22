@@ -1,0 +1,314 @@
+api_info:
+  name: "VW0104 Device API"
+  version: "1.0.0"
+  device_model: "VW0104-N001-000"
+  firmware_version: "V1.0.0"
+  build_date: "2025-10-15"
+  connection_type: "Telnet (Port 23)"
+  authentication:
+    username: "admin"
+    password:
+    timeout: 5
+    max_retries: 3
+
+commands:
+  audio:
+    description: "Audio control commands for HDMI and audio outputs"
+    syntax: "SET/GET AVMUTE or AUDIO_MUTE [parameters]"
+
+    set_hdmi_audio_mute:
+      command: "SET AVMUTE out prm<CR><LF>"
+      description: "Set HDMI audio mute to on/off for specified output(s)"
+      parameters:
+        out: "{out1, out2, out3, out4, all}"
+        prm: "{on, off}"
+      return: "AVMUTE out prm<CR><LF>"
+      example: "SET AVMUTE out1 on<CR><LF>"
+      status: "working"
+
+    get_hdmi_audio_mute:
+      command: "GET AVMUTE out<CR><LF>"
+      description: "Get HDMI audio mute status for specified output(s)"
+      parameters:
+        out: "{out1, out2, out3, out4, all}"
+      return: "AVMUTE out prm<CR><LF>"
+      example: "GET AVMUTE out1<CR><LF>"
+      status: "working"
+
+    set_audio_output_mute:
+      command: "SET AUDIO_MUTE prm<CR><LF>"
+      description: "Set global audio output mute on/off"
+      parameters:
+        prm: "{on, off}"
+      return: "AUDIO_MUTE prm<CR><LF>"
+      example: "SET AUDIO_MUTE on<CR><LF>"
+      status: "working"
+
+    get_audio_output_mute:
+      command: "GET AUDIO_MUTE<CR><LF>"
+      description: "Get audio output mute status"
+      return: "AUDIO_MUTE prm<CR><LF>"
+      example: "GET AUDIO_MUTE<CR><LF>"
+      status: "working"
+
+  cec:
+    description: "CEC power and delay control commands"
+    syntax: "SET/GET CEC_PWR, AUTOCEC_FN, AUTOCEC_D"
+
+    set_cec_power:
+      command: "SET CEC_PWR out prm<CR><LF>"
+      description: "Set sink output power on/off"
+      parameters:
+        out: "{out1, out2, out3, out4, all}"
+        prm: "{on, off}"
+      return: "CEC_PWR out prm<CR><LF>"
+      example: "SET CEC_PWR out1 on<CR><LF>"
+      status: "working"
+
+    set_cec_auto_power:
+      command: "SET AUTOCEC_FN out prm<CR><LF>"
+      description: "Enable or disable CEC auto power function"
+      parameters:
+        out: "{out1, out2, out3, out4, all}"
+        prm: "{on, off}"
+      return: "AUTOCEC_FN out prm<CR><LF>"
+      example: "SET AUTOCEC_FN out1 on<CR><LF>"
+      status: "working"
+
+    get_cec_auto_power:
+      command: "GET AUTOCEC_FN out<CR><LF>"
+      description: "Get current CEC auto power function status"
+      parameters:
+        out: "{out1, out2, out3, out4, all}"
+      return: "AUTOCEC_FN out prm<CR><LF>"
+      example: "GET AUTOCEC_FN out1<CR><LF>"
+      status: "working"
+
+    set_cec_delay:
+      command: "SET AUTOCEC_D out prm<CR><LF>"
+      description: "Set CEC auto power delay time (1–30 minutes)"
+      parameters:
+        out: "{out1, out2, out3, out4, all}"
+        prm: "{1–30}"
+      return: "AUTOCEC_D out prm<CR><LF>"
+      example: "SET AUTOCEC_D out1 2<CR><LF>"
+      status: "working"
+
+    get_cec_delay:
+      command: "GET AUTOCEC_D out<CR><LF>"
+      description: "Get CEC auto power delay time"
+      return: "AUTOCEC_D out prm<CR><LF>"
+      example: "GET AUTOCEC_D out1<CR><LF>"
+      status: "working"
+
+  hdcp:
+    description: "HDCP input control and status commands"
+    syntax: "SET/GET HDCP_S [parameters]"
+
+    set_hdcp_support:
+      command: "SET HDCP_S in prm<CR><LF>"
+      description: "Enable or disable HDCP support on input"
+      parameters:
+        in: "{in1}"
+        prm: "{on, off}"
+      return: "HDCP_S in prm<CR><LF>"
+      example: "SET HDCP_S in1 on<CR><LF>"
+      status: "working"
+
+    get_hdcp_support:
+      command: "GET HDCP_S in<CR><LF>"
+      description: "Get HDCP support status for input"
+      return: "HDCP_S in prm<CR><LF>"
+      example: "GET HDCP_S in1<CR><LF>"
+      status: "working"
+
+  edid:
+    description: "EDID management commands"
+    syntax: "SET/GET EDID [parameters]"
+
+    set_input_edid:
+      command: "SET EDID prm1 prm2<CR><LF>"
+      description: "Set EDID for input from fixed or copied profiles"
+      parameters:
+        prm1: "{all}"
+        prm2: "{1–21, 99}"
+      return: "EDID prm1 prm2<CR><LF>"
+      example: "SET EDID all 12<CR><LF>"
+      status: "working"
+
+    get_input_edid:
+      command: "GET EDID prm1<CR><LF>"
+      description: "Get input EDID status"
+      return: "EDID prm1 prm2<CR><LF>"
+      example: "GET EDID all<CR><LF>"
+      status: "working"
+
+  osd:
+    description: "On-screen display control"
+    syntax: "SET OSD [on/off]"
+
+    set_osd:
+      command: "SET OSD prm1<CR><LF>"
+      description: "Enable or disable OSD display"
+      parameters:
+        prm1: "{on, off}"
+      return: "OSD prm1<CR><LF>"
+      example: "SET OSD on<CR><LF>"
+      status: "working"
+
+  system:
+    description: "System and network management commands"
+    syntax: "RESET, REBOOT, GET/SET IPADDR, etc."
+
+    factory_reset:
+      command: "RESET<CR><LF>"
+      description: "Reset device to factory defaults"
+      return: "RESET<CR><LF>"
+      example: "RESET<CR><LF>"
+      status: "working"
+
+    reboot:
+      command: "REBOOT<CR><LF>"
+      description: "Reboot the device"
+      return: "REBOOT<CR><LF>"
+      example: "REBOOT<CR><LF>"
+      status: "working"
+
+    get_ip_address:
+      command: "GET IPADDR<CR><LF>"
+      description: "Retrieve IP address, subnet mask, and gateway"
+      return: "IPADDR xxx.xxx.xxx.xxx MASK xxx.xxx.xxx.xxx GATEWAY xxx.xxx.xxx.xxx<CR><LF>"
+      example: "GET IPADDR<CR><LF>"
+      status: "working"
+
+    set_ip_address:
+      command: "SET IPADDR xxx.xxx.xxx.xxx MASK xxx.xxx.xxx.xxx GATEWAY xxx.xxx.xxx.xxx<CR><LF>"
+      description: "Set IP, mask, and gateway"
+      return: "IPADDR xxx.xxx.xxx.xxx MASK xxx.xxx.xxx.xxx GATEWAY xxx.xxx.xxx.xxx<CR><LF>"
+      example: "SET IPADDR 192.168.1.2 MASK 255.255.255.0 GATEWAY 192.168.2.1<CR><LF>"
+      status: "working"
+
+    get_network_mode:
+      command: "GET NETCFG MODE<CR><LF>"
+      description: "Get network configuration mode (DHCP or STATIC)"
+      return: "NETCFG MODE prm<CR><LF>"
+      example: "GET NETCFG MODE<CR><LF>"
+      status: "working"
+
+    set_network_mode:
+      command: "SET NETCFG MODE prm<CR><LF>"
+      description: "Set network configuration mode (DHCP or STATIC)"
+      parameters:
+        prm: "{DHCP, STATIC}"
+      return: "NETCFG MODE prm<CR><LF>"
+      example: "SET NETCFG MODE DHCP<CR><LF>"
+      status: "working"
+
+    standby:
+      command: "STANDBY<CR><LF>"
+      description: "Set device to standby mode"
+      return: "STANDBY!<CR><LF>"
+      status: "working"
+
+    wake:
+      command: "WAKE<CR><LF>"
+      description: "Wake device from standby"
+      return: "WAKE!<CR><LF>"
+      status: "working"
+
+    get_standby_status:
+      command: "GET STANDBY<CR><LF>"
+      description: "Check whether device is in standby or wake mode"
+      return: "{STANDBY! or WAKE!}<CR><LF>"
+      example: "GET STANDBY<CR><LF>"
+      status: "working"
+
+  update_info:
+    description: "Firmware and hardware version queries"
+
+    get_firmware_version:
+      command: "GET VER<CR><LF>"
+      description: "Get firmware versions of internal modules"
+      return: "VER ARM VER Vx.x.x MCU VER Vx.x.x"
+      example: "GET VER<CR><LF>"
+      status: "working"
+
+    get_hardware_version:
+      command: "GET HW_VER<CR><LF>"
+      description: "Get hardware version"
+      return: "HW_VER Vx.x"
+      example: "GET HW_VER<CR><LF>"
+      status: "working"
+
+  video_output:
+    description: "Video output and scaling configuration"
+    syntax: "SET/GET VIDOUT_SCALE or VIDOUT_RES"
+
+    set_scaler_mode:
+      command: "SET VIDOUT_SCALE out prm<CR><LF>"
+      description: "Set output scaler mode (auto/manual)"
+      parameters:
+        out: "{all}"
+        prm: "{auto, manual}"
+      return: "VIDOUT_SCALE out prm<CR><LF>"
+      example: "SET VIDOUT_SCALE all auto<CR><LF>"
+      status: "working"
+
+    get_scaler_mode:
+      command: "GET VIDOUT_SCALE out<CR><LF>"
+      description: "Get current output scaler mode"
+      return: "VIDOUT_SCALE out prm<CR><LF>"
+      example: "GET VIDOUT_SCALE all<CR><LF>"
+      status: "working"
+
+    set_output_resolution:
+      command: "SET VIDOUT_RES out prm<CR><LF>"
+      description: "Set manual output resolution (manual mode only)"
+      parameters:
+        prm: "{4096x2160@60, 3840x2160@60, 1920x1080@60, 1280x720@60, etc.}"
+      return: "VIDOUT_RES out prm<CR><LF>"
+      example: "SET VIDOUT_RES all 3840x2160@60<CR><LF>"
+      status: "working"
+
+    get_output_resolution:
+      command: "GET VIDOUT_RES out<CR><LF>"
+      description: "Get current output resolution"
+      return: "VIDOUT_RES out prm<CR><LF>"
+      example: "GET VIDOUT_RES all<CR><LF>"
+      status: "working"
+
+  video_wall:
+    description: "Video wall layout and mode configuration"
+    syntax: "SET/GET VIDWALL or VW_QUICK [parameters]"
+
+    set_video_wall_mode:
+      command: "SET VIDWALL prm<CR><LF>"
+      description: "Set video wall mode"
+      parameters:
+        prm: "{quick, standard}"
+      return: "VIDWALL prm<CR><LF>"
+      example: "SET VIDWALL quick<CR><LF>"
+      status: "working"
+
+    get_video_wall_mode:
+      command: "GET VIDWALL<CR><LF>"
+      description: "Get current video wall mode"
+      return: "VIDWALL prm<CR><LF>"
+      example: "GET VIDWALL<CR><LF>"
+      status: "working"
+
+    set_quick_wall_mode:
+      command: "SET VW_QUICK prm<CR><LF>"
+      description: "Set predefined video wall layout"
+      parameters:
+        prm: "{1x2, 1x2R, 1x3, 1x4, 1x4R, 2x1, 2x2, 2x2R, SM, 3x1, 4x1}"
+      return: "VW_QUICK prm<CR><LF>"
+      example: "SET VW_QUICK 2x2<CR><LF>"
+      status: "working"
+
+    get_quick_wall_mode:
+      command: "GET VW_QUICK<CR><LF>"
+      description: "Get current quick video wall layout"
+      return: "VW_QUICK prm<CR><LF>"
+      example: "GET VW_QUICK<CR><LF>"
+      status: "working"

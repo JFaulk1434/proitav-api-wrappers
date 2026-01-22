@@ -1,0 +1,311 @@
+api_version: "1.2"
+device: FSC640-000
+categories:
+
+  - name: Device Management
+    commands:
+      - id: 2.1.1
+        name: Configure Device Name
+        request: "gbconfig --name <DeviceName>"
+        parameters:
+          - name: DeviceName
+            type: string
+            constraints: "1–20 chars, letters/numbers/space/_/-"
+        response: None
+        example:
+          request: "gbconfig --name MeetingRoom"
+          response: None
+
+      - id: 2.1.2
+        name: Query Device Name
+        request: "gbconfig -s name"
+        parameters: []
+        response: "<DeviceName>"
+        example:
+          request: "gbconfig -s name"
+          response: "MeetingRoom"
+
+      - id: 2.1.3
+        name: Query Device Information
+        request: "gbconfig -s device-info"
+        parameters: []
+        response: "Model + Firmware Version"
+        example:
+          request: "gbconfig -s device-info"
+          response: |
+            FSC640-000
+            V1.1.0
+
+      - id: 2.1.4
+        name: Reboot Device
+        request: "gbcontrol --reboot"
+        parameters: []
+        response: None
+
+      - id: 2.1.5
+        name: Reset Device Factory Default
+        request: "gbcontrol --reset-to-default [guide]"
+        parameters:
+          - name: guide
+            type: optional
+            description: Restore guide picture only
+        response: None
+
+      - id: 2.1.6
+        name: Configure OSD Display
+        request: "gbconfig --show-osd-item {devicename|ipaddress|wifipwd|accesscode} {y|n}"
+        parameters:
+          - name: item
+            type: enum
+            values: [devicename, ipaddress, wifipwd, accesscode]
+          - name: state
+            type: enum
+            values: [y, n]
+        response: None
+
+      - id: 2.1.7
+        name: Query OSD Display
+        request: "gbconfig -s show-osd-item [item]"
+        parameters: []
+        response: "{y|n} or list"
+
+  - name: Input & Output Management
+    commands:
+      - id: 2.2.1
+        name: Configure Output Resolution
+        request: "gbconfig --output-resolution {Resolution|auto}"
+        parameters:
+          - name: Resolution
+            type: enum
+            values: [3840x2160P@60, 3840x2160P@50, 1920x1080P@60, 1280x720P@60, auto]
+        response: None
+
+      - id: 2.2.2
+        name: Query Output Resolution
+        request: "gbconfig -s output-resolution"
+        parameters: []
+        response: "{Resolution|disconnected} [auto]"
+
+      - id: 2.2.3
+        name: Configure Output HDCP
+        request: "gbconfig --hdcp-enable {y|n}"
+        parameters:
+          - name: state
+            type: enum
+            values: [y, n]
+        response: None
+
+      - id: 2.2.4
+        name: Query Output HDCP
+        request: "gbconfig -s hdcp-enable"
+        parameters: []
+        response: "{y|n}"
+
+      - id: 2.2.5
+        name: Report Input Signal Status
+        request: "Event-driven"
+        response: "[Event] VideoSource <VideoName> {NoSignal|VideoTiming ColorFormat}"
+
+      - id: 2.2.6
+        name: Query Input Video Format
+        request: "gbconfig --input-state [VideoName]"
+        parameters:
+          - name: VideoName
+            type: enum
+            values: [usbc, hdmi, airplay1..4, miracast1..4, dongle1..4, chromecast1..4]
+        response: "{invalid|VideoFormat}"
+
+  - name: Video Switching
+    commands:
+      - id: 2.3.1
+        name: Configure Automatic Switching
+        request: "gbconfig --auto-switch {y|n}"
+        response: None
+      - id: 2.3.2
+        name: Query Automatic Switching
+        request: "gbconfig -s auto-switch"
+        response: "{y|n}"
+      - id: 2.3.3
+        name: Configure Multiview Feature
+        request: "gbconfig --multiview {y|n}"
+        response: None
+      - id: 2.3.4
+        name: Query Multiview Feature
+        request: "gbconfig -s multiview"
+        response: "{y|n}"
+      - id: 2.3.5
+        name: Start Displaying Video Source
+        request: "gblayout --start-video {VideoName|guide} [WinNo]"
+        response: None
+      - id: 2.3.6
+        name: Stop Displaying Video Source
+        request: "gblayout --stop-video VideoName"
+        response: None
+      - id: 2.3.7
+        name: Display Video Source in Full Screen
+        request: "gbconfig --video-source {VideoName|guide}"
+        response: None
+      - id: 2.3.8
+        name: Query Video Output Status
+        request: "gbconfig -s video-source"
+        response: "{guide|disconnected|VideoNames|null}"
+      - id: 2.3.9
+        name: Query Layout List
+        request: "gblayout --list"
+        response: "List of layouts"
+      - id: 2.3.10
+        name: Query Layout
+        request: "gblayout --get [LayoutID|LayoutName]"
+        response: "Layout details"
+      - id: 2.3.11
+        name: Switch Layout
+        request: "gblayout --set {LayoutID|LayoutName}"
+        response: None
+
+  - name: Audio & Auxiliary Signal Switching
+    commands:
+      - id: 2.4.1
+        name: Configure Output Audio Source
+        request: "gbconfig --audio-source {VideoName|auto}"
+        response: None
+      - id: 2.4.2
+        name: Query Output Audio Source
+        request: "gbconfig -s audio-source"
+        response: "{VideoName|auto} {VideoName|null}"
+      - id: 2.4.3
+        name: Configure USB Host
+        request: "gbconfig --usb-host {usbcin|usbhost|wireless|auto}"
+        response: None
+      - id: 2.4.4
+        name: Query USB Host
+        request: "gbconfig -s usb-host"
+        response: "USBHost [auto]"
+
+  - name: Standby & Peripheral Control
+    commands:
+      - id: 2.5.1
+        name: Configure Automatic Standby
+        request: "gbconfig --auto-standby {y|n}"
+      - id: 2.5.2
+        name: Query Automatic Standby
+        request: "gbconfig -s auto-standby"
+      - id: 2.5.3
+        name: Configure Automatic Standby Timeout
+        request: "gbconfig --auto-standby-time <seconds>"
+      - id: 2.5.4
+        name: Query Automatic Standby Timeout
+        request: "gbconfig -s auto-standby-time"
+      - id: 2.5.5
+        name: Configure CEC Command
+        request: "gbconfig --cec-cmd {on|off} CECCode"
+      - id: 2.5.6
+        name: Query CEC Command
+        request: "gbconfig -s cec-cmd [on|off]"
+      - id: 2.5.7
+        name: Configure RS232 Work Mode
+        request: "gbconfig --rs232-role {api|com|passthrough}"
+      - id: 2.5.8
+        name: Query RS232 Work Mode
+        request: "gbconfig -s rs232-role"
+      - id: 2.5.9
+        name: Configure RS232 Settings
+        request: "gbconfig --rs232-param RS232Settings"
+      - id: 2.5.10
+        name: Query RS232 Setting
+        request: "gbconfig -s rs232-param"
+      - id: 2.5.11
+        name: Configure RS232 Baud Rate
+        request: "gbconfig --rs232-baudrate BaudRate"
+      - id: 2.5.12
+        name: Query RS232 Baud Rate
+        request: "gbconfig -s rs232-baudrate"
+      - id: 2.5.13
+        name: Configure RS232 Command
+        request: "gbconfig --rs232-cmd {on|off|CmdName} [hex|str] CmdStr"
+      - id: 2.5.14
+        name: Query RS232 Command
+        request: "gbconfig -s rs232-cmd [CmdName]"
+      - id: 2.5.15
+        name: Configure Power on/off via RS232
+        request: "gbconfig --sinkpower-mode {cec|both}"
+      - id: 2.5.16
+        name: Query Power on/off via RS232
+        request: "gbconfig -s sinkpower-mode"
+      - id: 2.5.17
+        name: Enter/Exit Standby Mode
+        request: "gbconfig --sinkpower {on|off}"
+      - id: 2.5.18
+        name: Query Standby Mode
+        request: "gbconfig -s sinkpower"
+      - id: 2.5.19
+        name: Report Standby Mode Change
+        request: "Event"
+      - id: 2.5.20
+        name: Send CEC/RS232 Command
+        request: "gbcontrol --send-cmd {on|off|CmdName} [rs232|cec|both]"
+      - id: 2.5.21
+        name: Send RS232 Data
+        request: "gbcontrol --serial [options] CmdStr"
+
+  - name: Network & BYOD
+    commands:
+      - id: 2.6.1
+        name: Configure Network Mode
+        request: "gbconfig --network-isolation {y|n}"
+      - id: 2.6.2
+        name: Query Network Mode
+        request: "gbconfig -s network-isolation"
+      - id: 2.6.3
+        name: Configure IP Address
+        request: "gbconfig --ip-address {control|service} {dhcp|static ...}"
+      - id: 2.6.4
+        name: Query IP Address
+        request: "gbconfig -s ip-address [control|service]"
+      - id: 2.6.5
+        name: Configure USB-C Network Adapter
+        request: "gbconfig --nic-enable {y|n}"
+      - id: 2.6.6
+        name: Query USB-C Network Adapter
+        request: "gbconfig -s nic-enable"
+      - id: 2.6.7
+        name: Configure Wi-Fi Mode
+        request: "gbconfig --wifi-mode {2|5} {channel|auto}"
+      - id: 2.6.8
+        name: Query Wi-Fi Mode
+        request: "gbconfig -s wifi-mode"
+      - id: 2.6.9
+        name: Configure Wi-Fi Hotspot
+        request: "gbconfig --softap-enable {y|n}"
+      - id: 2.6.10
+        name: Query Wi-Fi Hotspot
+        request: "gbconfig -s softap-enable"
+      - id: 2.6.11
+        name: Configure Wi-Fi Password
+        request: "gbconfig --softap-password WifiPassword"
+      - id: 2.6.12
+        name: Query Wi-Fi Password
+        request: "gbconfig -s softap-password"
+      - id: 2.6.13
+        name: Configure Soft Router
+        request: "gbconfig --softap-router {y|n}"
+      - id: 2.6.14
+        name: Query Soft Router
+        request: "gbconfig -s softap-router"
+      - id: 2.6.15
+        name: Configure BYOD
+        request: "gbconfig --byod-enable {y|n}"
+      - id: 2.6.16
+        name: Query BYOD
+        request: "gbconfig -s byod-enable"
+      - id: 2.6.17
+        name: Configure BYOD Access Code
+        request: "gbconfig --access-code {code|auto|none}"
+      - id: 2.6.18
+        name: Query BYOD Access Code
+        request: "gbconfig -s access-code"
+      - id: 2.6.19
+        name: Configure SSID Broadcast
+        request: "gbconfig --broadcast-ssid {y|n}"
+      - id: 2.6.20
+        name: Query SSID Broadcast
+        request: "gbconfig -s broadcast-ssid"

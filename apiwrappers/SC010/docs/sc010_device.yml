@@ -1,0 +1,78 @@
+
+module: device
+description: Device-level management commands for SC010 ecosystem
+
+schema:
+  command:
+    required:
+      - command
+      - syntax
+      - description
+      - response
+    properties:
+      command: string
+      syntax: string
+      description: string
+      parameters: list
+      response:
+        type: string
+        schema: object
+
+commands:
+
+  info:
+    command: "device info"
+    syntax: "device info [hostname...]"
+    description: "Get device information"
+    parameters:
+      - hostname
+    response:
+      type: json
+      schema:
+        hostname: string
+        model: string
+        firmware: string
+        status: string
+
+  reboot:
+    command: "device reboot"
+    syntax: "device reboot <hostname...>"
+    description: "Reboot device(s)"
+    parameters:
+      - hostname
+    response:
+      type: confirmation
+      schema: {}
+
+  restorefactory:
+    command: "device restorefactory"
+    syntax: "device restorefactory <hostname...>"
+    description: "Factory reset device(s)"
+    parameters:
+      - hostname
+    response:
+      type: confirmation
+      schema: {}
+
+  alias:
+    set:
+      command: "device alias set"
+      syntax: "device alias set <hostname> <alias>"
+      description: "Assign alias to device"
+      parameters:
+        - hostname
+        - alias
+      response:
+        type: confirmation
+        schema: {}
+
+    get:
+      command: "device alias get"
+      syntax: "device alias get <hostname>"
+      description: "Get device alias"
+      parameters:
+        - hostname
+      response:
+        type: string
+        schema:
+          alias: string

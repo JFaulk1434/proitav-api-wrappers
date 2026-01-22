@@ -1,0 +1,341 @@
+# CAM600 Device API Documentation
+# Based on testing results from CAM600_Device wrapper
+
+api_info:
+  name: "CAM600 Device API"
+  version: "1.0"
+  device_model: "CAM600-000"
+  firmware_version: "V1.0.91"
+  build_date: "2025-07-11 15:51:14"
+  connection_type: "Telnet (Port 23)"
+  authentication:
+    username: "admin"
+    password: 
+    timeout: 5
+    max_retries: 3
+
+commands:
+  gbcontrol:
+    description: "Device control commands for system operations"
+    syntax: "gbcontrol [options]"
+    
+    device_info:
+      command: "gbcontrol --device-info"
+      description: "Get device information including model, firmware, and build date"
+      response_format: "dict"
+      response_fields:
+        model: "string - Device model (e.g., CAM600-000)"
+        firmware: "string - Firmware version (e.g., V1.0.91)"
+        build_date: "string - Build date and time (e.g., 2025-07-11 15:51:14)"
+      example_response:
+        model: "CAM600-000"
+        firmware: "V1.0.91"
+        build_date: "2025-07-11 15:51:14"
+      status: "working"
+      
+    camera_info:
+      command: "gbcontrol --camera-info"
+      description: "Get camera firmware information for main and motor components"
+      response_format: "dict"
+      response_fields:
+        main: "string - Main firmware version (e.g., Main:V1.0.91)"
+        motor0: "string - Motor0 firmware version (e.g., Motor0:YMODEM-V5.05)"
+        motor1: "string - Motor1 firmware version (e.g., Motor1:YMODEM-V5.05)"
+      example_response:
+        main: "Main:V1.0.91"
+        motor0: "Motor0:YMODEM-V5.05"
+        motor1: "Motor1:YMODEM-V5.05"
+      status: "working"
+      
+    reboot:
+      command: "gbcontrol --reboot"
+      description: "Reboot the device"
+      response_format: "string"
+      status: "not_tested"
+      
+    factory_reset:
+      command: "gbcontrol --reset-to-default"
+      description: "Reset device to factory default settings"
+      response_format: "string"
+      status: "not_tested"
+      
+    privacy_position:
+      command: "gbcontrol --privacy-position"
+      description: "Turn camera privacy position on or off"
+      response_format: "string"
+      status: "not_tested"
+
+  gbconfig:
+    description: "Configuration commands for device settings"
+    syntax: "gbconfig [options] or gbconfig -s [option]"
+    
+    # Device Settings
+    device_name:
+      command: "gbconfig -s device-name"
+      description: "Get current device name"
+      response_format: "string"
+      example_response: "CAM600-000"
+      status: "working"
+      
+    # Camera Settings
+    camera_mode:
+      command: "gbconfig -s camera-mode"
+      description: "Get current tracking mode"
+      response_format: "string"
+      response_values:
+        "0": "Off"
+        "1": "Auto framing"
+        "2": "Speaker tracking"
+        "3": "Presenter tracking"
+      example_response: "2"
+      status: "working"
+      
+    camera_zoom:
+      command: "gbconfig -s camera-zoom"
+      description: "Get current zoom level"
+      response_format: "string"
+      response_range: "0-600"
+      example_response: "100"
+      status: "working"
+      
+    camera_maxzoom:
+      command: "gbconfig -s camera-maxzoom"
+      description: "Get maximum physical zoom level"
+      response_format: "string"
+      example_response: "600"
+      status: "working"
+      
+    camera_mirror:
+      command: "gbconfig -s camera-mirror"
+      description: "Get current mirror and invert settings"
+      response_format: "string"
+      response_format_details: "Two space-separated values: mirror invert"
+      response_values:
+        mirror: "0 = disabled, 1 = enabled"
+        invert: "0 = disabled, 1 = enabled"
+      example_response: "0 0"
+      status: "working"
+      
+    camera_powerline:
+      command: "gbconfig -s camera-powerline"
+      description: "Get current powerline frequency"
+      response_format: "string"
+      response_values:
+        "50": "50Hz"
+        "60": "60Hz"
+      example_response: "50"
+      status: "working"
+      
+    camera_hdmode:
+      command: "gbconfig -s camera-hdmode"
+      description: "Get current HD mode status"
+      response_format: "string"
+      response_values:
+        "0": "Disabled"
+        "1": "Enabled"
+      example_response: "1"
+      status: "working"
+      
+    camera_offtracking:
+      command: "gbconfig -s camera-offtracking"
+      description: "Get current off tracking mode configuration"
+      response_format: "string"
+      response_format_details: "Two space-separated values: effect pip"
+      response_values:
+        effect: "0 = disabled, 1 = enabled"
+        pip: "0 = disabled, 1 = enabled"
+      example_response: "1 1"
+      status: "working"
+      
+    camera_speakertracking:
+      command: "gbconfig -s camera-speakertracking"
+      description: "Get current speaker tracking mode configuration"
+      response_format: "string"
+      response_format_details: "Two space-separated values: effect pip"
+      response_values:
+        effect: "0 = disabled, 1 = enabled"
+        pip: "0 = disabled, 1 = enabled"
+      example_response: "0 1"
+      status: "working"
+      
+    camera_presentertracking:
+      command: "gbconfig -s camera-presentertracking"
+      description: "Get current presenter tracking mode configuration"
+      response_format: "string"
+      response_format_details: "Two space-separated values: effect pip"
+      response_values:
+        effect: "0 = disabled, 1 = enabled"
+        pip: "0 = disabled, 1 = enabled"
+      example_response: "0 1"
+      status: "working"
+      
+    # Network Settings
+    network:
+      command: "gbconfig -s network"
+      description: "Get current network configuration"
+      response_format: "string"
+      response_format_details: "Four space-separated values: dhcp ip netmask gateway"
+      response_values:
+        dhcp: "0 = static IP, 1 = DHCP"
+        ip: "IP address"
+        netmask: "Subnet mask"
+        gateway: "Gateway address"
+      example_response: "0 10.0.30.51 255.255.255.0 10.0.30.1"
+      status: "working"
+      
+    network_ipconflict:
+      command: "gbconfig -s network-ipconflict"
+      description: "Get current IP conflict detection status"
+      response_format: "string"
+      response_values:
+        "0": "Disabled"
+        "1": "Enabled"
+      example_response: "1"
+      status: "working"
+      
+    # System Settings
+    system_standby:
+      command: "gbconfig -s system-standby"
+      description: "Get current standby indicator mode"
+      response_format: "string"
+      response_values:
+        "0": "Disabled"
+        "1": "Enabled"
+      example_response: "0"
+      status: "working"
+      
+    # Output Settings
+    hdmi_out:
+      command: "gbconfig -s hdmi-out"
+      description: "Get current HDMI output status"
+      response_format: "string"
+      response_values:
+        "0": "Disabled"
+        "1": "Enabled"
+      example_response: "0"
+      status: "working"
+      
+    # Device Information
+    mac:
+      command: "gbconfig -s mac"
+      description: "Get device MAC address"
+      response_format: "string"
+      example_response: "34:1B:22:83:DF:55"
+      status: "working"
+
+# Failed/Unsupported Commands
+unsupported_commands:
+  description: "Commands that return 'undefined option' errors"
+  
+  room_name:
+    command: "gbconfig -s room-name"
+    error: "undefined option: room-name"
+    status: "not_supported"
+    
+  camera_autoframing:
+    command: "gbconfig -s camera-autoframing"
+    error: "undefined option: camera-autoframing"
+    status: "not_supported"
+    
+  camera_autoframingspeed:
+    command: "gbconfig -s camera-autoframingspeed"
+    error: "undefined option: camera-autoframingspeed"
+    status: "not_supported"
+    
+  camera_speakertrackingspeed:
+    command: "gbconfig -s camera-speakertrackingspeed"
+    error: "undefined option: camera-speakertrackingspeed"
+    status: "not_supported"
+
+# Help Commands (Expected to return help text)
+help_commands:
+  description: "Help commands that return usage information (not errors)"
+  
+  gbconfig_help:
+    command: "gbconfig --help"
+    description: "Get help information for gbconfig commands"
+    response_format: "help_text"
+    status: "working_but_marked_as_failed"
+    
+  gbcontrol_help:
+    command: "gbcontrol --help"
+    description: "Get help information for gbcontrol commands"
+    response_format: "help_text"
+    status: "working_but_marked_as_failed"
+
+# Test Results Summary
+test_summary:
+  total_methods_tested: 22
+  successful: 16
+  failed: 6
+  success_rate: "72.7%"
+  
+  working_categories:
+    - "Device Information (2/2)"
+    - "Camera Settings (8/8)"
+    - "Network Settings (2/2)"
+    - "System Settings (1/1)"
+    - "Output Settings (1/1)"
+    - "Device Identification (1/1)"
+    
+  failing_categories:
+    - "Room Configuration (1/1)"
+    - "Advanced Tracking (3/3)"
+    - "Help Commands (2/2 - false positives)"
+
+# Connection Information
+connection:
+  protocol: "Telnet"
+  port: 23
+  timeout: 5
+  max_retries: 3
+  authentication:
+    username: "admin"
+    password: "admin"
+  connection_sequence:
+    1: "Connect to device on port 23"
+    2: "Wait for 'username:' prompt"
+    3: "Send 'admin'"
+    4: "Wait for 'password:' prompt"
+    5: "Send 'admin'"
+    6: "Wait for '~ # ' prompt"
+
+# Usage Examples
+usage_examples:
+  basic_device_info:
+    description: "Get basic device information"
+    commands:
+      - "gbcontrol --device-info"
+      - "gbcontrol --camera-info"
+      - "gbconfig -s device-name"
+      - "gbconfig -s mac"
+      
+  camera_status:
+    description: "Get current camera status"
+    commands:
+      - "gbconfig -s camera-mode"
+      - "gbconfig -s camera-zoom"
+      - "gbconfig -s camera-mirror"
+      - "gbconfig -s camera-hdmode"
+      
+  network_status:
+    description: "Get network configuration"
+    commands:
+      - "gbconfig -s network"
+      - "gbconfig -s network-ipconflict"
+      
+  tracking_status:
+    description: "Get tracking configuration"
+    commands:
+      - "gbconfig -s camera-offtracking"
+      - "gbconfig -s camera-speakertracking"
+      - "gbconfig -s camera-presentertracking"
+
+# Notes
+notes:
+  - "All gbconfig -s commands return the current value of the setting"
+  - "Some commands return multiple space-separated values"
+  - "Boolean values are represented as 0 (disabled) or 1 (enabled)"
+  - "IP addresses and network information are returned as space-separated strings"
+  - "The device supports both gbconfig (configuration) and gbcontrol (control) command sets"
+  - "Help commands return usage information but are marked as failed in testing (false positive)"
