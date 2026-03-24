@@ -1,0 +1,71 @@
+
+module: session
+description: Session and alias-mode control for SC010 controller
+
+schema:
+  command:
+    required:
+      - command
+      - syntax
+      - description
+      - response
+    properties:
+      command: string
+      syntax: string
+      description: string
+      parameters: list
+      response:
+        type: string
+        schema: object
+
+commands:
+
+  alias_mode:
+    enable:
+      command: "config set session alias on"
+      syntax: "config set session alias on"
+      description: "Enable alias mode for session"
+      parameters: []
+      response:
+        type: confirmation
+        schema: {}
+
+    disable:
+      command: "config set session alias off"
+      syntax: "config set session alias off"
+      description: "Disable alias mode for session"
+      parameters: []
+      response:
+        type: confirmation
+        schema: {}
+
+    status:
+      command: "config get session alias"
+      syntax: "config get session alias"
+      description: "Get alias mode status"
+      parameters: []
+      response:
+        type: json
+        schema:
+          enabled: boolean
+
+  timeout:
+    set:
+      command: "config set session timeout"
+      syntax: "config set session timeout <seconds>"
+      description: "Set session timeout"
+      parameters:
+        - seconds
+      response:
+        type: confirmation
+        schema: {}
+
+    get:
+      command: "config get session timeout"
+      syntax: "config get session timeout"
+      description: "Get session timeout"
+      parameters: []
+      response:
+        type: json
+        schema:
+          seconds: integer

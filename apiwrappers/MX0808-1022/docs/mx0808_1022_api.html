@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Telnet API commands for the MX0808-1022 8x8 HDMI matrix with analog and digital audio outputs</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 2rem auto; max-width: 960px; line-height: 1.5; color: #222; }
+code, pre { font-family: Menlo, Consolas, monospace; }
+pre { background: #f5f5f5; padding: 1rem; overflow-x: auto; }
+h1, h2, h3, h4 { margin-top: 1.5rem; }
+ul { padding-left: 1.5rem; }
+</style>
+</head>
+<body>
+<h1 id="device-api-reference">DEVICE API Reference</h1>
+
+<p>Telnet API commands for the MX0808-1022 8x8 HDMI matrix with analog and digital audio outputs</p>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ul>
+<li><a href="#switch-get">Switch / Get</a></li>
+<li><a href="#switch-set">Switch / Set</a></li>
+<li><a href="#audio-switch-get">Audio Switch / Get</a></li>
+<li><a href="#audio-switch-set">Audio Switch / Set</a></li>
+<li><a href="#cec-power">Cec Power</a></li>
+<li><a href="#cec-auto-get">Cec Auto / Get</a></li>
+<li><a href="#cec-auto-set">Cec Auto / Set</a></li>
+<li><a href="#cec-delay-get">Cec Delay / Get</a></li>
+<li><a href="#cec-delay-set">Cec Delay / Set</a></li>
+<li><a href="#cec-command-get">Cec Command / Get</a></li>
+<li><a href="#cec-command-set">Cec Command / Set</a></li>
+<li><a href="#cec-send">Cec Send</a></li>
+<li><a href="#input-hdcp-support-get">Input Hdcp Support / Get</a></li>
+<li><a href="#input-hdcp-support-set">Input Hdcp Support / Set</a></li>
+<li><a href="#edid-get">Edid / Get</a></li>
+<li><a href="#edid-set">Edid / Set</a></li>
+<li><a href="#edid-write">Edid Write</a></li>
+<li><a href="#edid-read">Edid Read</a></li>
+<li><a href="#system-reset">System / Reset</a></li>
+<li><a href="#system-reboot">System / Reboot</a></li>
+<li><a href="#ir-mode-get">Ir Mode / Get</a></li>
+<li><a href="#ir-mode-set">Ir Mode / Set</a></li>
+<li><a href="#api-list">Api List</a></li>
+<li><a href="#ip-address">Ip Address</a></li>
+<li><a href="#power-get">Power / Get</a></li>
+<li><a href="#power-standby">Power / Standby</a></li>
+<li><a href="#power-wake">Power / Wake</a></li>
+<li><a href="#firmware-version">Firmware Version</a></li>
+<li><a href="#preset-save">Preset / Save</a></li>
+<li><a href="#preset-restore">Preset / Restore</a></li>
+<li><a href="#output-hdcp-mode-get">Output Hdcp Mode / Get</a></li>
+<li><a href="#output-hdcp-mode-set">Output Hdcp Mode / Set</a></li>
+<li><a href="#video-input-connection">Video Input / Connection</a></li>
+<li><a href="#video-input-signal">Video Input / Signal</a></li>
+<li><a href="#video-input-format">Video Input / Format</a></li>
+<li><a href="#video-input-audio-format">Video Input / Audio Format</a></li>
+<li><a href="#video-input-hdcp-version">Video Input / Hdcp Version</a></li>
+<li><a href="#video-output-connection">Video Output / Connection</a></li>
+<li><a href="#video-output-signal">Video Output / Signal</a></li>
+<li><a href="#video-output-format">Video Output / Format</a></li>
+<li><a href="#video-output-audio-format">Video Output / Audio Format</a></li>
+<li><a href="#video-output-hdcp-version">Video Output / Hdcp Version</a></li>
+</ul>
+
+<h2 id="command-reference">Command Reference</h2>
+
+<div id="switch-get"></div>
+
+<h3 id="switch-get">Switch / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET MP</code></li>
+<li><strong>Syntax</strong>: <code>GET MP &lt;hdmiout1..hdmiout8|all&gt;</code></li>
+<li><strong>Description</strong>: Get the current HDMI input mapping for one output or all outputs.</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+mapping: string
+</code></pre>
+
+<div id="switch-set"></div>
+
+<h3 id="switch-set">Switch / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET SW</code></li>
+<li><strong>Syntax</strong>: <code>SET SW &lt;hdmiin1..hdmiin8|hdmiin0&gt; &lt;hdmiout1..hdmiout8|all&gt;</code></li>
+<li><strong>Description</strong>: Route one HDMI input to one HDMI output or to all outputs. <code>hdmiin0</code> powers down the selected output path.</li>
+<li><strong>Parameters</strong>: input, output</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+input: string
+output: string
+</code></pre>
+
+<div id="audio-switch-get"></div>
+
+<h3 id="audio-switch-get">Audio Switch / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET AUDIOMP</code></li>
+<li><strong>Syntax</strong>: <code>GET AUDIOMP &lt;audioout1..audioout8&gt;</code></li>
+<li><strong>Description</strong>: Get the current audio source mapped to one analog audio output.</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+source: string
+output: string
+</code></pre>
+
+<div id="audio-switch-set"></div>
+
+<h3 id="audio-switch-set">Audio Switch / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET AUDIOSW</code></li>
+<li><strong>Syntax</strong>: <code>SET AUDIOSW &lt;hdmi|arc&gt; &lt;audioout1..audioout8&gt;</code></li>
+<li><strong>Description</strong>: Select whether an analog audio output follows HDMI audio extraction or ARC audio.</li>
+<li><strong>Parameters</strong>: source, output</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+source: string
+output: string
+</code></pre>
+
+<div id="cec-power"></div>
+
+<h2 id="cec-power">Cec Power</h2>
+
+<ul>
+<li><strong>Command</strong>: <code>SET CEC_PWR</code></li>
+<li><strong>Syntax</strong>: <code>SET CEC_PWR &lt;hdmiout1..hdmiout8|all&gt; &lt;on|off&gt;</code></li>
+<li><strong>Description</strong>: Send a CEC power command to one sink or all sinks.</li>
+<li><strong>Parameters</strong>: output, state</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="cec-auto-get"></div>
+
+<h3 id="cec-auto-get">Cec Auto / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET AUTOCEC_FN</code></li>
+<li><strong>Syntax</strong>: <code>GET AUTOCEC_FN &lt;hdmiout1..hdmiout8&gt;</code></li>
+<li><strong>Description</strong>: Get the automatic CEC power state for one output.</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="cec-auto-set"></div>
+
+<h3 id="cec-auto-set">Cec Auto / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET AUTOCEC_FN</code></li>
+<li><strong>Syntax</strong>: <code>SET AUTOCEC_FN &lt;hdmiout1..hdmiout8&gt; &lt;on|off&gt;</code></li>
+<li><strong>Description</strong>: Enable or disable automatic CEC power behavior for one output.</li>
+<li><strong>Parameters</strong>: output, state</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="cec-delay-get"></div>
+
+<h3 id="cec-delay-get">Cec Delay / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET AUTOCEC_D</code></li>
+<li><strong>Syntax</strong>: <code>GET AUTOCEC_D &lt;hdmiout1..hdmiout8&gt;</code></li>
+<li><strong>Description</strong>: Get the automatic CEC power-off delay for one output.</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+minutes: integer
+</code></pre>
+
+<div id="cec-delay-set"></div>
+
+<h3 id="cec-delay-set">Cec Delay / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET AUTOCEC_D</code></li>
+<li><strong>Syntax</strong>: <code>SET AUTOCEC_D &lt;hdmiout1..hdmiout8&gt; &lt;0..30&gt;</code></li>
+<li><strong>Description</strong>: Set the automatic CEC power-off delay in minutes for one output.</li>
+<li><strong>Parameters</strong>: output, minutes</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+minutes: integer
+</code></pre>
+
+<div id="cec-command-get"></div>
+
+<h3 id="cec-command-get">Cec Command / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET CECCMD_EDIT</code></li>
+<li><strong>Syntax</strong>: <code>GET CECCMD_EDIT &lt;hdmiout1..hdmiout8&gt; &lt;pwron|pwroff&gt;</code></li>
+<li><strong>Description</strong>: Read the stored custom CEC power-on or power-off command for one output.</li>
+<li><strong>Parameters</strong>: output, command_type</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+command_type: string
+hex_bytes: string
+</code></pre>
+
+<div id="cec-command-set"></div>
+
+<h3 id="cec-command-set">Cec Command / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET CECCMD_EDIT</code></li>
+<li><strong>Syntax</strong>: <code>SET CECCMD_EDIT &lt;hdmiout1..hdmiout8&gt; &lt;pwron|pwroff&gt; &lt;hex_bytes&gt;</code></li>
+<li><strong>Description</strong>: Store a custom CEC power-on or power-off command for one output.</li>
+<li><strong>Parameters</strong>: output, command_type, hex_bytes</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+command_type: string
+hex_bytes: string
+</code></pre>
+
+<div id="cec-send"></div>
+
+<h2 id="cec-send">Cec Send</h2>
+
+<ul>
+<li><strong>Command</strong>: <code>SET CEC_CMD</code></li>
+<li><strong>Syntax</strong>: <code>SET CEC_CMD &lt;hdmiout1..hdmiout8&gt; &lt;hex_bytes&gt;</code></li>
+<li><strong>Description</strong>: Send a raw CEC command to one HDMI output.</li>
+<li><strong>Parameters</strong>: output, hex_bytes</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+hex_bytes: string
+</code></pre>
+
+<div id="input-hdcp-support-get"></div>
+
+<h3 id="input-hdcp-support-get">Input Hdcp Support / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET HDCP_S</code></li>
+<li><strong>Syntax</strong>: <code>GET HDCP_S &lt;hdmiin1..hdmiin8&gt;</code></li>
+<li><strong>Description</strong>: Get the HDCP support state for one HDMI input.</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+state: string
+</code></pre>
+
+<div id="input-hdcp-support-set"></div>
+
+<h3 id="input-hdcp-support-set">Input Hdcp Support / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET HDCP_S</code></li>
+<li><strong>Syntax</strong>: <code>SET HDCP_S &lt;hdmiin1..hdmiin8&gt; &lt;on|off&gt;</code></li>
+<li><strong>Description</strong>: Enable or disable HDCP support on one HDMI input.</li>
+<li><strong>Parameters</strong>: input, state</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+input: string
+state: string
+</code></pre>
+
+<div id="edid-get"></div>
+
+<h3 id="edid-get">Edid / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET EDID</code></li>
+<li><strong>Syntax</strong>: <code>GET EDID &lt;hdmiin1..hdmiin8|all&gt;</code></li>
+<li><strong>Description</strong>: Get the EDID preset assigned to one input or all inputs.</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+edid: string
+</code></pre>
+
+<div id="edid-set"></div>
+
+<h3 id="edid-set">Edid / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET EDID</code></li>
+<li><strong>Syntax</strong>: <code>SET EDID &lt;hdmiin1..hdmiin8&gt; &lt;1..27&gt;</code></li>
+<li><strong>Description</strong>: Assign one of the vendor EDID presets to an HDMI input.</li>
+<li><strong>Parameters</strong>: input, profile</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+input: string
+profile: integer
+</code></pre>
+
+<div id="edid-write"></div>
+
+<h2 id="edid-write">Edid Write</h2>
+
+<ul>
+<li><strong>Command</strong>: <code>SET EDID_W</code></li>
+<li><strong>Syntax</strong>: <code>SET EDID_W &lt;hdmiin1..hdmiin8&gt; &lt;block0|block1&gt; &lt;hex_bytes&gt;</code></li>
+<li><strong>Description</strong>: Write one EDID block to an HDMI input. The device returns <code>ok</code> or <code>error</code> for checksum validation.</li>
+<li><strong>Parameters</strong>: input, block, hex_bytes</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+input: string
+block: string
+status: string
+</code></pre>
+
+<div id="edid-read"></div>
+
+<h2 id="edid-read">Edid Read</h2>
+
+<ul>
+<li><strong>Command</strong>: <code>GET EDID_R</code></li>
+<li><strong>Syntax</strong>: <code>GET EDID_R &lt;hdmiout1..hdmiout8&gt;</code></li>
+<li><strong>Description</strong>: Read EDID block data from one HDMI output. The device can return block data, <code>error</code>, or <code>unconnect</code>.</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+block0: string
+block1: string
+status: string
+</code></pre>
+
+<div id="system-reset"></div>
+
+<h3 id="system-reset">System / Reset</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>RESET</code></li>
+<li><strong>Syntax</strong>: <code>RESET</code></li>
+<li><strong>Description</strong>: Restore the device to factory defaults.</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<div id="system-reboot"></div>
+
+<h3 id="system-reboot">System / Reboot</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>REBOOT</code></li>
+<li><strong>Syntax</strong>: <code>REBOOT</code></li>
+<li><strong>Description</strong>: Reboot the device.</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<div id="ir-mode-get"></div>
+
+<h3 id="ir-mode-get">Ir Mode / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET IR_SC</code></li>
+<li><strong>Syntax</strong>: <code>GET IR_SC</code></li>
+<li><strong>Description</strong>: Get the current IR system code mode.</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+mode: string
+</code></pre>
+
+<div id="ir-mode-set"></div>
+
+<h3 id="ir-mode-set">Ir Mode / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET IR_SC</code></li>
+<li><strong>Syntax</strong>: <code>SET IR_SC &lt;all|mode1|mode2&gt;</code></li>
+<li><strong>Description</strong>: Set the IR system code mode.</li>
+<li><strong>Parameters</strong>: mode</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+mode: string
+</code></pre>
+
+<div id="api-list"></div>
+
+<h2 id="api-list">Api List</h2>
+
+<ul>
+<li><strong>Command</strong>: <code>help</code></li>
+<li><strong>Syntax</strong>: <code>help</code></li>
+<li><strong>Description</strong>: Return the device&#x27;s built-in API command list.</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+commands: string
+</code></pre>
+
+<div id="ip-address"></div>
+
+<h2 id="ip-address">Ip Address</h2>
+
+<ul>
+<li><strong>Command</strong>: <code>GET IPADDR</code></li>
+<li><strong>Syntax</strong>: <code>GET IPADDR</code></li>
+<li><strong>Description</strong>: Get the configured IP address for the device.</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+ip_address: string
+</code></pre>
+
+<div id="power-get"></div>
+
+<h3 id="power-get">Power / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET STANDBY</code></li>
+<li><strong>Syntax</strong>: <code>GET STANDBY</code></li>
+<li><strong>Description</strong>: Get whether the device is in standby or awake.</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+state: string
+</code></pre>
+
+<div id="power-standby"></div>
+
+<h3 id="power-standby">Power / Standby</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>STANDBY</code></li>
+<li><strong>Syntax</strong>: <code>STANDBY</code></li>
+<li><strong>Description</strong>: Put the device into standby mode.</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<div id="power-wake"></div>
+
+<h3 id="power-wake">Power / Wake</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>WAKE</code></li>
+<li><strong>Syntax</strong>: <code>WAKE</code></li>
+<li><strong>Description</strong>: Wake the device from standby mode.</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<div id="firmware-version"></div>
+
+<h2 id="firmware-version">Firmware Version</h2>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VER</code></li>
+<li><strong>Syntax</strong>: <code>GET VER</code></li>
+<li><strong>Description</strong>: Get the firmware version reported by the device.</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+firmware: string
+</code></pre>
+
+<div id="preset-save"></div>
+
+<h3 id="preset-save">Preset / Save</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SAVE PRESET</code></li>
+<li><strong>Syntax</strong>: <code>SAVE PRESET &lt;1|2|3&gt;</code></li>
+<li><strong>Description</strong>: Save the current routing and configuration state to one preset slot.</li>
+<li><strong>Parameters</strong>: slot</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+slot: integer
+</code></pre>
+
+<div id="preset-restore"></div>
+
+<h3 id="preset-restore">Preset / Restore</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>RESTORE PRESET</code></li>
+<li><strong>Syntax</strong>: <code>RESTORE PRESET &lt;1|2|3&gt;</code></li>
+<li><strong>Description</strong>: Restore one saved preset slot.</li>
+<li><strong>Parameters</strong>: slot</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+slot: integer
+</code></pre>
+
+<div id="output-hdcp-mode-get"></div>
+
+<h3 id="output-hdcp-mode-get">Output Hdcp Mode / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET HDCP</code></li>
+<li><strong>Syntax</strong>: <code>GET HDCP &lt;hdmiout1..hdmiout8|all&gt;</code></li>
+<li><strong>Description</strong>: Get HDCP handling mode for one HDMI output or all outputs.</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+mode: string
+</code></pre>
+
+<div id="output-hdcp-mode-set"></div>
+
+<h3 id="output-hdcp-mode-set">Output Hdcp Mode / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET HDCP</code></li>
+<li><strong>Syntax</strong>: <code>SET HDCP &lt;hdmiout1..hdmiout8|all&gt; &lt;follow|hdcp1.4|hdcp2.2|off&gt;</code></li>
+<li><strong>Description</strong>: Set HDCP handling for one HDMI output or all outputs.</li>
+<li><strong>Parameters</strong>: output, mode</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+mode: string
+</code></pre>
+
+<div id="video-input-connection"></div>
+
+<h3 id="video-input-connection">Video Input / Connection</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDIN_CONNECT</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDIN_CONNECT &lt;in1..in8&gt;</code></li>
+<li><strong>Description</strong>: Get whether one HDMI input is physically connected.</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+state: string
+</code></pre>
+
+<div id="video-input-signal"></div>
+
+<h3 id="video-input-signal">Video Input / Signal</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDIN_SIG</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDIN_SIG &lt;in1..in8&gt;</code></li>
+<li><strong>Description</strong>: Get whether one HDMI input currently has a valid signal.</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+state: string
+</code></pre>
+
+<div id="video-input-format"></div>
+
+<h3 id="video-input-format">Video Input / Format</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDIN_FORMAT</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDIN_FORMAT &lt;in1..in8&gt;</code></li>
+<li><strong>Description</strong>: Get the detected video format on one HDMI input.</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+format: string
+</code></pre>
+
+<div id="video-input-audio-format"></div>
+
+<h3 id="video-input-audio-format">Video Input / Audio Format</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET AUDIN_FORMAT</code></li>
+<li><strong>Syntax</strong>: <code>GET AUDIN_FORMAT &lt;in1..in8&gt;</code></li>
+<li><strong>Description</strong>: Get the detected audio format on one HDMI input.</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+format: string
+</code></pre>
+
+<div id="video-input-hdcp-version"></div>
+
+<h3 id="video-input-hdcp-version">Video Input / Hdcp Version</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDIN_HDCP</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDIN_HDCP &lt;in1..in8&gt;</code></li>
+<li><strong>Description</strong>: Get the HDCP version detected on one HDMI input.</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+hdcp: string
+</code></pre>
+
+<div id="video-output-connection"></div>
+
+<h3 id="video-output-connection">Video Output / Connection</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_CONNECT</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_CONNECT &lt;out1..out8&gt;</code></li>
+<li><strong>Description</strong>: Get whether one HDMI output is physically connected.</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="video-output-signal"></div>
+
+<h3 id="video-output-signal">Video Output / Signal</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_SIG</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_SIG &lt;out1..out8&gt;</code></li>
+<li><strong>Description</strong>: Get whether one HDMI output currently has a valid signal.</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="video-output-format"></div>
+
+<h3 id="video-output-format">Video Output / Format</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_FORMAT</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_FORMAT &lt;out1..out8&gt;</code></li>
+<li><strong>Description</strong>: Get the current video format on one HDMI output.</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+format: string
+</code></pre>
+
+<div id="video-output-audio-format"></div>
+
+<h3 id="video-output-audio-format">Video Output / Audio Format</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET AUDOUT_FORMAT</code></li>
+<li><strong>Syntax</strong>: <code>GET AUDOUT_FORMAT &lt;out1..out8&gt;</code></li>
+<li><strong>Description</strong>: Get the current audio format on one HDMI output.</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+format: string
+</code></pre>
+
+<div id="video-output-hdcp-version"></div>
+
+<h3 id="video-output-hdcp-version">Video Output / Hdcp Version</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_HDCP</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_HDCP &lt;out1..out8&gt;</code></li>
+<li><strong>Description</strong>: Get the HDCP version detected on one HDMI output.</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+hdcp: string
+</code></pre>
+</body>
+</html>

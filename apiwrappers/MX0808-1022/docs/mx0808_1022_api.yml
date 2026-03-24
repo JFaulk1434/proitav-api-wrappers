@@ -1,0 +1,508 @@
+module: device
+description: Telnet API commands for the MX0808-1022 8x8 HDMI matrix with analog and digital audio outputs
+
+schema:
+  command:
+    required:
+      - command
+      - syntax
+      - description
+      - response
+    properties:
+      command: string
+      syntax: string
+      description: string
+      parameters: list
+      response:
+        type: string
+        schema: object
+
+commands:
+  switch:
+    set:
+      command: "SET SW"
+      syntax: "SET SW <hdmiin1..hdmiin8|hdmiin0> <hdmiout1..hdmiout8|all>"
+      description: "Route one HDMI input to one HDMI output or to all outputs. `hdmiin0` powers down the selected output path."
+      parameters:
+        - input
+        - output
+      response:
+        type: confirmation
+        schema:
+          input: string
+          output: string
+    get:
+      command: "GET MP"
+      syntax: "GET MP <hdmiout1..hdmiout8|all>"
+      description: "Get the current HDMI input mapping for one output or all outputs."
+      parameters:
+        - output
+      response:
+        type: string
+        schema:
+          mapping: string
+
+  audio_switch:
+    set:
+      command: "SET AUDIOSW"
+      syntax: "SET AUDIOSW <hdmi|arc> <audioout1..audioout8>"
+      description: "Select whether an analog audio output follows HDMI audio extraction or ARC audio."
+      parameters:
+        - source
+        - output
+      response:
+        type: confirmation
+        schema:
+          source: string
+          output: string
+    get:
+      command: "GET AUDIOMP"
+      syntax: "GET AUDIOMP <audioout1..audioout8>"
+      description: "Get the current audio source mapped to one analog audio output."
+      parameters:
+        - output
+      response:
+        type: string
+        schema:
+          source: string
+          output: string
+
+  cec_power:
+    command: "SET CEC_PWR"
+    syntax: "SET CEC_PWR <hdmiout1..hdmiout8|all> <on|off>"
+    description: "Send a CEC power command to one sink or all sinks."
+    parameters:
+      - output
+      - state
+    response:
+      type: confirmation
+      schema:
+        output: string
+        state: string
+
+  cec_auto:
+    set:
+      command: "SET AUTOCEC_FN"
+      syntax: "SET AUTOCEC_FN <hdmiout1..hdmiout8> <on|off>"
+      description: "Enable or disable automatic CEC power behavior for one output."
+      parameters:
+        - output
+        - state
+      response:
+        type: confirmation
+        schema:
+          output: string
+          state: string
+    get:
+      command: "GET AUTOCEC_FN"
+      syntax: "GET AUTOCEC_FN <hdmiout1..hdmiout8>"
+      description: "Get the automatic CEC power state for one output."
+      parameters:
+        - output
+      response:
+        type: string
+        schema:
+          output: string
+          state: string
+
+  cec_delay:
+    set:
+      command: "SET AUTOCEC_D"
+      syntax: "SET AUTOCEC_D <hdmiout1..hdmiout8> <0..30>"
+      description: "Set the automatic CEC power-off delay in minutes for one output."
+      parameters:
+        - output
+        - minutes
+      response:
+        type: confirmation
+        schema:
+          output: string
+          minutes: integer
+    get:
+      command: "GET AUTOCEC_D"
+      syntax: "GET AUTOCEC_D <hdmiout1..hdmiout8>"
+      description: "Get the automatic CEC power-off delay for one output."
+      parameters:
+        - output
+      response:
+        type: string
+        schema:
+          output: string
+          minutes: integer
+
+  cec_command:
+    set:
+      command: "SET CECCMD_EDIT"
+      syntax: "SET CECCMD_EDIT <hdmiout1..hdmiout8> <pwron|pwroff> <hex_bytes>"
+      description: "Store a custom CEC power-on or power-off command for one output."
+      parameters:
+        - output
+        - command_type
+        - hex_bytes
+      response:
+        type: confirmation
+        schema:
+          output: string
+          command_type: string
+          hex_bytes: string
+    get:
+      command: "GET CECCMD_EDIT"
+      syntax: "GET CECCMD_EDIT <hdmiout1..hdmiout8> <pwron|pwroff>"
+      description: "Read the stored custom CEC power-on or power-off command for one output."
+      parameters:
+        - output
+        - command_type
+      response:
+        type: string
+        schema:
+          output: string
+          command_type: string
+          hex_bytes: string
+
+  cec_send:
+    command: "SET CEC_CMD"
+    syntax: "SET CEC_CMD <hdmiout1..hdmiout8> <hex_bytes>"
+    description: "Send a raw CEC command to one HDMI output."
+    parameters:
+      - output
+      - hex_bytes
+    response:
+      type: confirmation
+      schema:
+        output: string
+        hex_bytes: string
+
+  input_hdcp_support:
+    set:
+      command: "SET HDCP_S"
+      syntax: "SET HDCP_S <hdmiin1..hdmiin8> <on|off>"
+      description: "Enable or disable HDCP support on one HDMI input."
+      parameters:
+        - input
+        - state
+      response:
+        type: confirmation
+        schema:
+          input: string
+          state: string
+    get:
+      command: "GET HDCP_S"
+      syntax: "GET HDCP_S <hdmiin1..hdmiin8>"
+      description: "Get the HDCP support state for one HDMI input."
+      parameters:
+        - input
+      response:
+        type: string
+        schema:
+          input: string
+          state: string
+
+  edid:
+    set:
+      command: "SET EDID"
+      syntax: "SET EDID <hdmiin1..hdmiin8> <1..27>"
+      description: "Assign one of the vendor EDID presets to an HDMI input."
+      parameters:
+        - input
+        - profile
+      response:
+        type: confirmation
+        schema:
+          input: string
+          profile: integer
+    get:
+      command: "GET EDID"
+      syntax: "GET EDID <hdmiin1..hdmiin8|all>"
+      description: "Get the EDID preset assigned to one input or all inputs."
+      parameters:
+        - input
+      response:
+        type: string
+        schema:
+          edid: string
+
+  edid_write:
+    command: "SET EDID_W"
+    syntax: "SET EDID_W <hdmiin1..hdmiin8> <block0|block1> <hex_bytes>"
+    description: "Write one EDID block to an HDMI input. The device returns `ok` or `error` for checksum validation."
+    parameters:
+      - input
+      - block
+      - hex_bytes
+    response:
+      type: confirmation
+      schema:
+        input: string
+        block: string
+        status: string
+
+  edid_read:
+    command: "GET EDID_R"
+    syntax: "GET EDID_R <hdmiout1..hdmiout8>"
+    description: "Read EDID block data from one HDMI output. The device can return block data, `error`, or `unconnect`."
+    parameters:
+      - output
+    response:
+      type: string
+      schema:
+        output: string
+        block0: string
+        block1: string
+        status: string
+
+  system:
+    reset:
+      command: "RESET"
+      syntax: "RESET"
+      description: "Restore the device to factory defaults."
+      parameters: []
+      response:
+        type: confirmation
+        schema: {}
+    reboot:
+      command: "REBOOT"
+      syntax: "REBOOT"
+      description: "Reboot the device."
+      parameters: []
+      response:
+        type: confirmation
+        schema: {}
+
+  ir_mode:
+    set:
+      command: "SET IR_SC"
+      syntax: "SET IR_SC <all|mode1|mode2>"
+      description: "Set the IR system code mode."
+      parameters:
+        - mode
+      response:
+        type: confirmation
+        schema:
+          mode: string
+    get:
+      command: "GET IR_SC"
+      syntax: "GET IR_SC"
+      description: "Get the current IR system code mode."
+      parameters: []
+      response:
+        type: string
+        schema:
+          mode: string
+
+  api_list:
+    command: "help"
+    syntax: "help"
+    description: "Return the device's built-in API command list."
+    parameters: []
+    response:
+      type: string
+      schema:
+        commands: string
+
+  ip_address:
+    command: "GET IPADDR"
+    syntax: "GET IPADDR"
+    description: "Get the configured IP address for the device."
+    parameters: []
+    response:
+      type: string
+      schema:
+        ip_address: string
+
+  power:
+    standby:
+      command: "STANDBY"
+      syntax: "STANDBY"
+      description: "Put the device into standby mode."
+      parameters: []
+      response:
+        type: confirmation
+        schema: {}
+    wake:
+      command: "WAKE"
+      syntax: "WAKE"
+      description: "Wake the device from standby mode."
+      parameters: []
+      response:
+        type: confirmation
+        schema: {}
+    get:
+      command: "GET STANDBY"
+      syntax: "GET STANDBY"
+      description: "Get whether the device is in standby or awake."
+      parameters: []
+      response:
+        type: string
+        schema:
+          state: string
+
+  firmware_version:
+    command: "GET VER"
+    syntax: "GET VER"
+    description: "Get the firmware version reported by the device."
+    parameters: []
+    response:
+      type: string
+      schema:
+        firmware: string
+
+  preset:
+    save:
+      command: "SAVE PRESET"
+      syntax: "SAVE PRESET <1|2|3>"
+      description: "Save the current routing and configuration state to one preset slot."
+      parameters:
+        - slot
+      response:
+        type: confirmation
+        schema:
+          slot: integer
+    restore:
+      command: "RESTORE PRESET"
+      syntax: "RESTORE PRESET <1|2|3>"
+      description: "Restore one saved preset slot."
+      parameters:
+        - slot
+      response:
+        type: confirmation
+        schema:
+          slot: integer
+
+  output_hdcp_mode:
+    set:
+      command: "SET HDCP"
+      syntax: "SET HDCP <hdmiout1..hdmiout8|all> <follow|hdcp1.4|hdcp2.2|off>"
+      description: "Set HDCP handling for one HDMI output or all outputs."
+      parameters:
+        - output
+        - mode
+      response:
+        type: confirmation
+        schema:
+          output: string
+          mode: string
+    get:
+      command: "GET HDCP"
+      syntax: "GET HDCP <hdmiout1..hdmiout8|all>"
+      description: "Get HDCP handling mode for one HDMI output or all outputs."
+      parameters:
+        - output
+      response:
+        type: string
+        schema:
+          output: string
+          mode: string
+
+  video_input:
+    connection:
+      command: "GET VIDIN_CONNECT"
+      syntax: "GET VIDIN_CONNECT <in1..in8>"
+      description: "Get whether one HDMI input is physically connected."
+      parameters:
+        - input
+      response:
+        type: string
+        schema:
+          input: string
+          state: string
+    signal:
+      command: "GET VIDIN_SIG"
+      syntax: "GET VIDIN_SIG <in1..in8>"
+      description: "Get whether one HDMI input currently has a valid signal."
+      parameters:
+        - input
+      response:
+        type: string
+        schema:
+          input: string
+          state: string
+    format:
+      command: "GET VIDIN_FORMAT"
+      syntax: "GET VIDIN_FORMAT <in1..in8>"
+      description: "Get the detected video format on one HDMI input."
+      parameters:
+        - input
+      response:
+        type: string
+        schema:
+          input: string
+          format: string
+    audio_format:
+      command: "GET AUDIN_FORMAT"
+      syntax: "GET AUDIN_FORMAT <in1..in8>"
+      description: "Get the detected audio format on one HDMI input."
+      parameters:
+        - input
+      response:
+        type: string
+        schema:
+          input: string
+          format: string
+    hdcp_version:
+      command: "GET VIDIN_HDCP"
+      syntax: "GET VIDIN_HDCP <in1..in8>"
+      description: "Get the HDCP version detected on one HDMI input."
+      parameters:
+        - input
+      response:
+        type: string
+        schema:
+          input: string
+          hdcp: string
+
+  video_output:
+    connection:
+      command: "GET VIDOUT_CONNECT"
+      syntax: "GET VIDOUT_CONNECT <out1..out8>"
+      description: "Get whether one HDMI output is physically connected."
+      parameters:
+        - output
+      response:
+        type: string
+        schema:
+          output: string
+          state: string
+    signal:
+      command: "GET VIDOUT_SIG"
+      syntax: "GET VIDOUT_SIG <out1..out8>"
+      description: "Get whether one HDMI output currently has a valid signal."
+      parameters:
+        - output
+      response:
+        type: string
+        schema:
+          output: string
+          state: string
+    format:
+      command: "GET VIDOUT_FORMAT"
+      syntax: "GET VIDOUT_FORMAT <out1..out8>"
+      description: "Get the current video format on one HDMI output."
+      parameters:
+        - output
+      response:
+        type: string
+        schema:
+          output: string
+          format: string
+    audio_format:
+      command: "GET AUDOUT_FORMAT"
+      syntax: "GET AUDOUT_FORMAT <out1..out8>"
+      description: "Get the current audio format on one HDMI output."
+      parameters:
+        - output
+      response:
+        type: string
+        schema:
+          output: string
+          format: string
+    hdcp_version:
+      command: "GET VIDOUT_HDCP"
+      syntax: "GET VIDOUT_HDCP <out1..out8>"
+      description: "Get the HDCP version detected on one HDMI output."
+      parameters:
+        - output
+      response:
+        type: string
+        schema:
+          output: string
+          hdcp: string

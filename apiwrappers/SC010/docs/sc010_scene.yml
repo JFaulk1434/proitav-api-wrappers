@@ -1,0 +1,85 @@
+
+module: scene
+description: Scene management commands for SC010 controller
+
+schema:
+  command:
+    required:
+      - command
+      - syntax
+      - description
+      - response
+    properties:
+      command: string
+      syntax: string
+      description: string
+      description: string
+      parameters: list
+      response:
+        type: string
+        schema: object
+
+commands:
+
+  list:
+    command: "scene get"
+    syntax: "scene get"
+    description: "List all available scenes"
+    parameters: []
+    response:
+      type: list
+      schema:
+        scene_name: string
+
+  info:
+    command: "scene info"
+    syntax: "scene info <scene_name>"
+    description: "Get detailed scene configuration"
+    parameters:
+      - scene_name
+    response:
+      type: json
+      schema:
+        name: string
+        layouts: list
+        routes: list
+
+  create:
+    command: "scene create"
+    syntax: "scene create <json_payload>"
+    description: "Create a scene using JSON definition"
+    parameters:
+      - json_payload
+    response:
+      type: confirmation
+      schema: {}
+
+  delete:
+    command: "scene delete"
+    syntax: "scene delete <scene_name>"
+    description: "Delete a scene"
+    parameters:
+      - scene_name
+    response:
+      type: confirmation
+      schema: {}
+
+  activate:
+    command: "scene active"
+    syntax: "scene active <scene_name>"
+    description: "Activate a scene"
+    parameters:
+      - scene_name
+    response:
+      type: confirmation
+      schema: {}
+
+  deactivate:
+    command: "scene inactive"
+    syntax: "scene inactive <scene_name>"
+    description: "Deactivate a scene"
+    parameters:
+      - scene_name
+    response:
+      type: confirmation
+      schema: {}

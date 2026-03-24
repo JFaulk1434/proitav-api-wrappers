@@ -1,0 +1,94 @@
+"""Standalone GET-style API test for {{PRODUCT_MODEL}}.
+
+Run this file directly from Cursor/VSCode. The device settings are intentionally
+kept at the top of the file so they are visible immediately.
+"""
+
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
+import sys
+
+
+DEVICE_IP = "10.0.50.19"
+PORT = 23
+TIMEOUT = 2.0
+DEBUG = False
+MARKDOWN_OUTPUT = False
+MARKDOWN_TABLE_COMMAND_LIMIT = 32
+MARKDOWN_TABLE_RESULT_LIMIT = 56
+
+
+CURRENT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = CURRENT_DIR.parent.parent
+WRAPPER_PATH = CURRENT_DIR / "{{PRODUCT_MODEL}}.py"
+
+if str(CURRENT_DIR) not in sys.path:
+    sys.path.insert(0, str(CURRENT_DIR))
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from test_report_utils import run_get_style_tests
+
+
+def load_wrapper_class():
+    """Load the wrapper module from the local file path."""
+    spec = spec_from_file_location("{{PRODUCT_MODEL}}_module", WRAPPER_PATH)
+    module = module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return getattr(module, "{{CLASS_NAME}}")
+
+
+WRAPPER_CLASS = load_wrapper_class()
+
+
+GET_COMMANDS = [
+    {
+        "method": "get_version",
+        "description": "Get firmware version",
+        "command": "GET VER",
+        "kwargs": {},
+    },
+]
+
+
+def build_device_info(device):
+    """Return report header fields for this device."""
+    return [
+        ("Model", "{{PRODUCT_MODEL}}"),
+        ("Firmware Version", device.get_version),
+    ]
+
+
+def setup_device(_device):
+    """Save state here if any read-style command requires a temporary change."""
+    return {"note": "No settings altered; nothing to restore after GET-style validation."}
+
+
+def teardown_device(_device, _saved_state):
+    """Restore any saved device state here."""
+    return None
+
+
+def main():
+    device = WRAPPER_CLASS(
+        DEVICE_IP,
+        port=PORT,
+        timeout=TIMEOUT,
+        debug=DEBUG,
+    )
+    return run_get_style_tests(
+        device=device,
+        model="{{PRODUCT_MODEL}}",
+        get_commands=GET_COMMANDS,
+        info_queries=build_device_info(device),
+        markdown_output=MARKDOWN_OUTPUT,
+        markdown_table_command_limit=MARKDOWN_TABLE_COMMAND_LIMIT,
+        markdown_table_result_limit=MARKDOWN_TABLE_RESULT_LIMIT,
+        setup_hook=setup_device,
+        teardown_hook=teardown_device,
+    )
+
+
+if __name__ == "__main__":
+    raise SystemExit(0 if main()["failure"] == 0 else 1)

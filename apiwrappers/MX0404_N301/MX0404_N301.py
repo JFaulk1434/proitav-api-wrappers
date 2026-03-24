@@ -1,6 +1,8 @@
-from telnetlib import Telnet
-import time
+import argparse
+import re
 import select
+import time
+from telnetlib import Telnet
 
 
 class MX0404N301_Device:
@@ -38,11 +40,85 @@ class MX0404N301_Device:
     Note: When all is configured properly, you can control the device through commands, which are available in the separate document.
     """
 
-    def __init__(self, ip, port=23):
+    def __init__(self, ip, port=23, timeout=2.0, debug=False):
         """Initializes the Matrix class."""
         self.ip = ip
         self.port = port
+        self.timeout = timeout
+        self.debug = debug
         self.tn = None
+
+    def _clean_response(self, response: str) -> str:
+        """Normalize telnet responses by removing prompts and blank lines."""
+        cleaned_lines = []
+        for line in response.replace("\r", "").split("\n"):
+            stripped = line.strip()
+            if not stripped:
+                continue
+            # The device uses ">" as both the prompt and the prefix before responses.
+            stripped = re.sub(r"^>+\s*", "", stripped)
+            stripped = re.sub(r"\s*>+\s*$", "", stripped)
+            if stripped:
+                cleaned_lines.append(stripped)
+        return "\n".join(cleaned_lines)
+
+    def _drain_socket(self):
+        """Clear any unread prompt/output left in the telnet buffer."""
+        if self.tn is None or self.tn.get_socket() is None:
+            return
+
+        while True:
+            ready, _, _ = select.select([self.tn.get_socket()], [], [], 0)
+            if not ready:
+                break
+            chunk = self.tn.read_very_eager()
+            if not chunk:
+                break
+
+    def _read_until_idle(self, timeout=None, idle_window: float = 0.15) -> str:
+        """Read device output until the socket becomes idle."""
+        timeout = self.timeout if timeout is None else timeout
+        start_time = time.time()
+        last_data_time = None
+        response_data = b""
+
+        while (time.time() - start_time) < timeout:
+            wait_time = idle_window if last_data_time is not None else 0.1
+            ready, _, _ = select.select([self.tn.get_socket()], [], [], wait_time)
+            if ready:
+                data = self.tn.read_very_eager()
+                if data:
+                    response_data += data
+                    last_data_time = time.time()
+                    continue
+            if last_data_time is not None and (time.time() - last_data_time) >= idle_window:
+                break
+
+        return self._clean_response(response_data.decode(errors="replace"))
+
+    def _format_pairs(self, *pairs) -> str:
+        """Format a variable number of key/value pairs for window commands."""
+        if len(pairs) == 1 and isinstance(pairs[0], dict):
+            iterable = pairs[0].items()
+        else:
+            iterable = pairs
+
+        tokens = []
+        for pair in iterable:
+            if not isinstance(pair, (tuple, list)) or len(pair) != 2:
+                raise ValueError("Pairs must be provided as ('key', 'value') tuples.")
+            tokens.extend([str(pair[0]), str(pair[1])])
+        return " ".join(tokens)
+
+    def _summarize_response(self, response: str, limit: int = 200) -> str:
+        """Shorten verbose responses for report-friendly terminal output."""
+        text = self._clean_response(str(response)) if response is not None else ""
+        if not text:
+            return "(no data)"
+        compact = " ".join(text.split())
+        if len(compact) > limit:
+            return compact[: limit - 3] + "..."
+        return compact
 
     def connect(self):
         """
@@ -50,12 +126,13 @@ class MX0404N301_Device:
         """
         if self.tn is None:
             self.tn = Telnet()  # Initialize without connecting
-            # self.tn.set_debuglevel(1)
+            if self.debug:
+                self.tn.set_debuglevel(1)
         try:
-            self.tn.open(self.ip, self.port, timeout=1.0)
-            self.tn.read_until(b"Welcome to Telnet!")
+            self.tn.open(self.ip, self.port, timeout=self.timeout)
+            self.tn.read_until(b"Welcome to Telnet!", timeout=self.timeout)
             self.tn.write(b"\n")
-            self.tn.read_until(b">")
+            self.tn.read_until(b">", timeout=self.timeout)
 
             return True
         except Exception as e:
@@ -85,13 +162,10 @@ class MX0404N301_Device:
                 continue
 
             try:
+                self._drain_socket()
                 message_bytes = f"{message}\n".encode()
                 self.tn.write(message_bytes)
-                stdout = self.tn.read_until(b"\r\n>").decode()
-                response = stdout.strip(">")
-                # if response.startswith(message):
-                #     response = response[len(message) :].strip()
-                return response
+                return self._read_until_idle(self.timeout)
             except Exception as e:
                 print(
                     f"Attempt {attempt + 1}: Failed to send command to {self.ip}. Error: {e}"
@@ -120,6 +194,7 @@ class MX0404N301_Device:
                 continue
 
             try:
+                self._drain_socket()
                 message_bytes = f"{message}\n".encode()
                 self.tn.write(message_bytes)
 
@@ -134,7 +209,7 @@ class MX0404N301_Device:
                         if not data:
                             break  # No more data to read
 
-                response = response_data.decode("utf-8").strip()
+                response = self._clean_response(response_data.decode("utf-8", errors="replace"))
                 return response
             except Exception as e:
                 print(f"Attempt {attempt + 1}: Failed to send command. Error: {e}")
@@ -467,6 +542,26 @@ class MX0404N301_Device:
 
         return self.send(f"GET AUDIO_MUTE {output}")
 
+    def set_audio_switch_mode(self, output, prm):
+        """Set the audio switching mode for one or all outputs."""
+
+        return self.send(f"SET AUDIOSW_M {output} {prm}")
+
+    def get_audio_switch_mode(self, output):
+        """Get the audio switching mode for one or all outputs."""
+
+        return self.send(f"GET AUDIOSW_M {output}")
+
+    def set_avmute(self, output, prm):
+        """Set AV mute for one output."""
+
+        return self.send(f"SET AVMUTE {output} {prm}")
+
+    def get_avmute(self, output):
+        """Get AV mute status for one output."""
+
+        return self.send(f"GET AVMUTE {output}")
+
     def set_cec_power(self, output, prm):
         """Set sink to power on or off
 
@@ -555,6 +650,16 @@ class MX0404N301_Device:
         """
 
         return self.send(f"GET HDCP_S {input}")
+
+    def set_output_hdcp_mode(self, output, prm):
+        """Set the HDCP mode for one output or all outputs."""
+
+        return self.send(f"SET HDCP {output} {prm}")
+
+    def get_output_hdcp_mode(self, output):
+        """Get the HDCP mode for one output or all outputs."""
+
+        return self.send(f"GET HDCP {output}")
 
     def set_edid(self, input, prm):
         """Set the EDID for the Input
@@ -921,6 +1026,11 @@ class MX0404N301_Device:
 
         return self.send(f"GET VIDOUT_FORMAT {output}")
 
+    def get_audio_output_format(self, output):
+        """Get the audio format information for one output."""
+
+        return self.send(f"GET AUDOUT_FORMAT {output}")
+
     def get_output_hdcp(self, output):
         """Get the Version of HDCP on selected output
 
@@ -1103,62 +1213,337 @@ class MX0404N301_Device:
 
         return self.send(f"GET VIDOUT_RES {out}")
 
+    def set_forced_sdr(self, output, prm):
+        """Set forced SDR mode for one output."""
+
+        return self.send(f"SET FORCED_SDR {output} {prm}")
+
+    def get_forced_sdr(self, output):
+        """Get forced SDR mode for one output."""
+
+        return self.send(f"GET FORCED_SDR {output}")
+
+    def set_vidout_active(self, output_id, prm):
+        """Enable or disable a multiview or videowall output profile."""
+
+        return self.send(f"SET VIDOUT_ACTIVE {output_id} {prm}")
+
+    def get_vidout_active(self, output_id):
+        """Get whether a multiview or videowall output profile is active."""
+
+        return self.send(f"GET VIDOUT_ACTIVE {output_id}")
+
+    def set_vidout_mode(self, output_id, scene):
+        """Set the active scene for a multiview or videowall output."""
+
+        return self.send(f"SET VIDOUT_MODE {output_id} {scene}")
+
+    def get_vidout_mode(self, output_id=None):
+        """Get the active scene for one output or the device summary."""
+
+        command = "GET VIDOUT_MODE"
+        if output_id:
+            command = f"{command} {output_id}"
+        return self.send(command)
+
+    def set_vw_window_source(self, output_id, scene, *window_source_pairs):
+        """Assign sources to one or more videowall windows."""
+
+        pairs = self._format_pairs(*window_source_pairs)
+        return self.send(f"SET VW_WIN_SRC {output_id} {scene} {pairs}")
+
+    def get_vw_window_source(self, output_id, scene, *window_refs):
+        """Get the source mapping for a videowall scene."""
+
+        suffix = f" {' '.join(str(ref) for ref in window_refs)}" if window_refs else ""
+        return self.send(f"GET VW_WIN_SRC {output_id} {scene}{suffix}")
+
+    def set_mv_window_source(self, output_id, scene, *window_source_pairs):
+        """Assign sources to one or more multiview windows."""
+
+        pairs = self._format_pairs(*window_source_pairs)
+        return self.send(f"SET MV_WIN_SRC {output_id} {scene} {pairs}")
+
+    def get_mv_window_source(self, output_id, scene):
+        """Get the source mapping for a multiview scene."""
+
+        return self.send(f"GET MV_WIN_SRC {output_id} {scene}")
+
+    def set_mv_audio_switch(self, output_id, scene, audio_mode, source):
+        """Set multiview audio routing for a scene."""
+
+        return self.send(f"SET MV_AUDIO_SW {output_id} {scene} {audio_mode} {source}")
+
+    def get_mv_audio_switch(self, output_id, scene):
+        """Get multiview audio routing for a scene."""
+
+        return self.send(f"GET MV_AUDIO_SW {output_id} {scene}")
+
+    def set_mv_window_border(self, output_id, scene, *window_status_pairs):
+        """Set the border enable state for one or more windows."""
+
+        pairs = self._format_pairs(*window_status_pairs)
+        return self.send(f"SET MV_WIN_BORDER_FN {output_id} {scene} {pairs}")
+
+    def get_mv_window_border(self, output_id, scene):
+        """Get the border enable state for a multiview scene."""
+
+        return self.send(f"GET MV_WIN_BORDER_FN {output_id} {scene}")
+
+    def set_mv_window_border_attr(self, output_id, scene, *window_attr_pairs):
+        """Set the border color and width for one or more windows."""
+
+        pairs = self._format_pairs(*window_attr_pairs)
+        return self.send(f"SET MV_WIN_BORDER_ATTR {output_id} {scene} {pairs}")
+
+    def get_mv_window_border_attr(self, output_id, scene, window_ref=None):
+        """Get the border color and width for one or more windows."""
+
+        command = f"GET MV_WIN_BORDER_ATTR {output_id} {scene}"
+        if window_ref:
+            command = f"{command} {window_ref}"
+        return self.send(command)
+
+    def test_all_get_commands(self, debug=False) -> dict:
+        """Run all GET commands, measure response times, and print a report."""
+        model = "MX0404-N301"
+        opened_here = False
+        previous_debug = self.debug
+
+        print(f"\n{model} Device Wrapper API Test\n")
+        print("=" * 80)
+        print()
+        print("DEVICE INFORMATION")
+        print("=" * 80)
+        print()
+
+        if self.tn is None:
+            self.debug = debug
+            if not self.connect():
+                print("Failed to establish connection.")
+                return {"success": 0, "failure": 1, "skipped": 0, "total": 0, "results": []}
+            opened_here = True
+
+        info_queries = [
+            ("Model", lambda: model),
+            ("Firmware Version", self.get_version),
+            ("Hardware Version", self.get_hardware),
+            ("IP Address", self.get_ipaddr),
+            ("Network Mode", self.get_network_mode),
+            ("Standby Status", self.get_standby),
+        ]
+
+        for label, getter in info_queries:
+            try:
+                value = getter() if callable(getter) else getter
+            except Exception as exc:
+                value = f"Unavailable ({exc})"
+            print(f"{label}: {self._summarize_response(value, 160)}")
+
+        print()
+        print("No settings altered; nothing to restore after GET-only validation.")
+        print()
+
+        get_methods = [
+            ("get_version", "Get firmware version", "GET VER", {}),
+            ("get_hardware", "Get hardware version", "GET HW_VER", {}),
+            ("get_ipaddr", "Get device IP address", "GET IPADDR", {}),
+            ("get_network_mode", "Get network mode", "GET NETCFG MODE", {}),
+            ("get_standby", "Get standby status", "GET STANDBY", {}),
+            ("get_ir", "Get IR system code", "GET IR_SC", {}),
+            ("get_mapping_output", "Get mapped input for output 1", "GET MP out1", {"output": "out1"}),
+            ("get_mapping_all", "Get all input-output mappings", "GET MP all", {}),
+            ("get_audio_switch_mode", "Get audio switching mode for output 1", "GET AUDIOSW_M out1", {"output": "out1"}),
+            ("get_audio_mute", "Get audio mute status for zone1", "GET AUDIO_MUTE zone1", {"output": "zone1"}),
+            ("get_avmute", "Get AV mute status for output 1", "GET AVMUTE out1", {"output": "out1"}),
+            ("get_cec_auto", "Get CEC auto power status for output 1", "GET AUTOCEC_FN out1", {"output": "out1"}),
+            ("get_cec_delay", "Get CEC auto power delay for output 1", "GET AUTOCEC_D out1", {"output": "out1"}),
+            ("get_hdcp", "Get input HDCP support for input 1", "GET HDCP_S in1", {"input": "in1"}),
+            ("get_output_hdcp_mode", "Get output HDCP mode for output 1", "GET HDCP out1", {"output": "out1"}),
+            ("get_edid_all", "Get EDID selection for all inputs", "GET EDID all", {}),
+            ("get_edid", "Get EDID selection for input 1", "GET EDID in1", {"input": "in1"}),
+            ("get_edid_output", "Read EDID from output 1", "GET EDID_R out1", {"output": "out1"}),
+            ("get_input_connection", "Get connection status for input 1", "GET VIDIN_CONNECT in1", {"input": "in1"}),
+            ("get_input_signal", "Get signal status for input 1", "GET VIDIN_SIG in1", {"input": "in1"}),
+            ("get_input_video", "Get video format for input 1", "GET VIDIN_FORMAT in1", {"input": "in1"}),
+            ("get_hdcp_version", "Get HDCP version for input 1", "GET VIDIN_HDCP in1", {"input": "in1"}),
+            ("get_output_connection", "Get connection status for output 1", "GET VIDOUT_CONNECT out1", {"output": "out1"}),
+            ("get_output_signal", "Get signal status for output 1", "GET VIDOUT_SIG out1", {"output": "out1"}),
+            ("get_output_video", "Get video format for output 1", "GET VIDOUT_FORMAT out1", {"output": "out1"}),
+            ("get_audio_output_format", "Get audio format for output 1", "GET AUDOUT_FORMAT out1", {"output": "out1"}),
+            ("get_output_hdcp", "Get HDCP version for output 1", "GET VIDOUT_HDCP out1", {"output": "out1"}),
+            ("get_vidout_scaling", "Get scaling mode for output 1", "GET VIDOUT_SCALE out1", {"out": "out1"}),
+            ("get_output_resolution", "Get output resolution for output 1", "GET VIDOUT_RES out1", {"out": "out1"}),
+            ("get_forced_sdr", "Get forced SDR status for output 1", "GET FORCED_SDR out1", {"output": "out1"}),
+            ("get_vidout_active", "Get multiview activity state", "GET VIDOUT_ACTIVE mv1", {"output_id": "mv1"}),
+            ("get_vidout_mode", "Get multiview scene selection", "GET VIDOUT_MODE mv1", {"output_id": "mv1"}),
+            ("get_mv_window_source", "Get multiview source mapping", "GET MV_WIN_SRC mv1 DUAL_VIEW", {"output_id": "mv1", "scene": "DUAL_VIEW"}),
+            ("get_mv_audio_switch", "Get multiview audio routing", "GET MV_AUDIO_SW mv1 DUAL_VIEW", {"output_id": "mv1", "scene": "DUAL_VIEW"}),
+            ("get_mv_window_border", "Get multiview border state", "GET MV_WIN_BORDER_FN mv1 DUAL_VIEW", {"output_id": "mv1", "scene": "DUAL_VIEW"}),
+            ("get_mv_window_border_attr", "Get multiview border attributes", "GET MV_WIN_BORDER_ATTR mv1 DUAL_VIEW win1", {"output_id": "mv1", "scene": "DUAL_VIEW", "window_ref": "win1"}),
+            ("get_vw_window_source", "Get videowall source mapping", "GET VW_WIN_SRC vw1 layout1", {"output_id": "vw1", "scene": "layout1"}),
+            ("get_api_list", "Get the device API help output", "help", {}),
+            ("get_mv_layout", "Get legacy multiview layout", "GET VIDOUT_MODE", {}),
+            ("get_mv_dual_src", "Get legacy dual-view input sources", "GET VIDOUT_DUAL_SRC", {}),
+            ("get_mv_pip_src", "Get legacy PIP input sources", "GET VIDOUT_PIP_SRC", {}),
+            ("get_mv_quad_src", "Get legacy quad input sources", "GET VIDOUT_QUAD_SRC", {}),
+            ("get_mv_master_src", "Get legacy master-view input sources", "GET VIDOUT_MASTER_SRC", {}),
+            ("get_mv_pip_smallsize", "Get legacy PIP window size", "GET VIDOUT_PIP_SIZE", {}),
+            ("get_mv_pip_smalllocation", "Get legacy PIP window position", "GET VIDOUT_PIP_POS", {}),
+            ("get_vidin_stretch", "Get legacy input stretch mode", "GET VIDIN_STRETCH in1", {"input": "in1"}),
+            ("get_audout_window", "Get legacy audio follow window", "GET AUDOUT_WND", {}),
+            ("get_videowall", "Get legacy videowall configuration", "GET VIDWALL", {}),
+            ("get_vidmode", "Get legacy global video mode", "GET VIDMODE", {}),
+            ("get_vidwall_bezel", "Get legacy videowall bezel settings", "GET VIDWALLBEZEL", {}),
+            ("get_vidwall_rotation", "Get legacy output rotation state", "GET VIDWALL_ROTATION out1", {"prm1": "out1"}),
+        ]
+
+        results = []
+        success_count = 0
+        failure_count = 0
+        skipped_count = 0
+
+        print(f"Testing {len(get_methods)} get methods...")
+        print("=" * 80)
+
+        try:
+            for method_name, description, command, kwargs in get_methods:
+                print()
+                print(f"{method_name}: {description}")
+                print(f"Command: {command}")
+                print("-" * 60)
+
+                try:
+                    method = getattr(self, method_name)
+                    start_time = time.time()
+                    result = method(**kwargs)
+                    execution_time = round(time.time() - start_time, 3)
+                    summary = self._summarize_response(result, 240)
+
+                    if not str(result).strip():
+                        status = "SKIPPED (no response)"
+                        skipped_count += 1
+                        success = False
+                    elif any(term in str(result).upper() for term in ["ERROR", "INVALID", "UNKNOWN", "FAILED"]):
+                        status = "FAILED (device error)"
+                        failure_count += 1
+                        success = False
+                    else:
+                        status = "SUCCESS"
+                        success_count += 1
+                        success = True
+
+                    print(f"Status: {status}")
+                    print(f"Response: {summary}")
+                    print(f"Response time: {execution_time:.3f}s")
+                    print("-" * 60)
+
+                    results.append(
+                        {
+                            "method": method_name,
+                            "description": description,
+                            "command": command,
+                            "status": status,
+                            "success": success,
+                            "execution_time": execution_time,
+                            "result": summary,
+                        }
+                    )
+                except Exception as exc:
+                    failure_count += 1
+                    status = f"FAILED (Exception: {exc})"
+                    print(f"Status: {status}")
+                    print("Response: (exception)")
+                    print("Response time: 0.000s")
+                    print("-" * 60)
+                    results.append(
+                        {
+                            "method": method_name,
+                            "description": description,
+                            "command": command,
+                            "status": status,
+                            "success": False,
+                            "execution_time": 0.0,
+                            "result": "(exception)",
+                        }
+                    )
+        finally:
+            if opened_here:
+                self.disconnect()
+            self.debug = previous_debug
+
+        total = len(get_methods)
+        success_rate = (success_count / total * 100) if total else 0
+
+        print()
+        print("=" * 80)
+        print("TEST SUMMARY")
+        print("=" * 80)
+        print(f"Total methods tested: {total}")
+        print(f"Successful: {success_count}")
+        print(f"Failed: {failure_count}")
+        print(f"Skipped: {skipped_count}")
+        print(f"Success rate: {success_rate:.1f}%")
+        print()
+        print("-" * 80)
+        print("DETAILED RESULTS")
+        print("-" * 80)
+        print(f"{'Command':<34} {'Status':<22} {'Time':<10} Result")
+        print("-" * 80)
+
+        for result in results:
+            print(
+                f"{result['command']:<34} "
+                f"{result['status'][:22]:<22} "
+                f"{result['execution_time']:.3f}s   "
+                f"{result['result']}"
+            )
+
+        return {
+            "success": success_count,
+            "failure": failure_count,
+            "skipped": skipped_count,
+            "total": total,
+            "success_rate": round(success_rate, 1),
+            "results": results,
+        }
+
+
+def main():
+    """Command-line entrypoint for the MX0404-N301 wrapper."""
+    parser = argparse.ArgumentParser(description="MX0404-N301 telnet API wrapper")
+    parser.add_argument("host", help="Device IP address")
+    parser.add_argument("--port", type=int, default=23, help="Telnet port")
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=2.0,
+        help="Socket timeout in seconds",
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable telnet debug output",
+    )
+    parser.add_argument(
+        "--test-get-commands",
+        action="store_true",
+        help="Run the report-style GET command validation suite",
+    )
+    args = parser.parse_args()
+
+    matrix = MX0404N301_Device(
+        args.host,
+        port=args.port,
+        timeout=args.timeout,
+        debug=args.debug,
+    )
+
+    if args.test_get_commands:
+        matrix.test_all_get_commands(debug=args.debug)
+    else:
+        print("Wrapper initialized. Use --test-get-commands to run the GET command report.")
+
 
 if __name__ == "__main__":
-    from time import sleep
-
-    matrix = MX0404N301_Device("10.0.50.23")
-
-    while True:
-        matrix.set_vidmode("videowall")
-        sleep(5)
-        for index in range(1, 5):
-            matrix.set_videowall(f"in{index}", "out1", "out2", "out3", "out4")
-            sleep(3)
-
-        matrix.set_vidmode("Matrix")
-        sleep(5)
-        matrix.set_switch_all("in1")
-        sleep(3)
-        matrix.set_switch_all("in2")
-        sleep(3)
-        matrix.set_switch_all("in3")
-        sleep(3)
-        matrix.set_switch_all("in4")
-        sleep(3)
-
-    # get_commands = [
-    #     matrix.get_audio_mute("zone1"),
-    #     matrix.get_cec_auto("out1"),
-    #     matrix.get_cec_delay("out1"),
-    #     matrix.get_edid("in1"),
-    #     matrix.get_edid_all(),
-    #     matrix.get_edid_output("out1"),
-    #     matrix.get_hardware(),
-    #     matrix.get_hdcp("in1"),
-    #     matrix.get_hdcp_version("in1"),
-    #     matrix.get_input_connection("in1"),
-    #     matrix.get_input_signal("in1"),
-    #     matrix.get_input_video("in1"),
-    #     matrix.get_ipaddr(),
-    #     matrix.get_ir(),
-    #     matrix.get_mapping_all(),
-    #     matrix.get_mapping_output("out1"),
-    #     matrix.get_network_mode(),
-    #     matrix.get_output_connection("out1"),
-    #     matrix.get_output_hdcp("out1"),
-    #     matrix.get_output_resolution("out1"),
-    #     matrix.get_output_signal("out1"),
-    #     matrix.get_output_video("out1"),
-    #     matrix.get_standby(),
-    #     matrix.get_version(),
-    #     matrix.get_vidmode(),
-    #     matrix.get_vidout_scaling("out1"),
-    #     matrix.get_vidwall(),
-    #     matrix.get_vidwall_bezel(),
-    #     matrix.get_vidwall_rotation("out1"),
-    #     matrix.get_api_list(),
-    # ]
-    # for command in get_commands:
-    #     print(command)
-    #     sleep(0.25)
+    main()

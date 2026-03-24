@@ -1,0 +1,137 @@
+"""Shared base classes for the IP970 product family.
+
+This module demonstrates the recommended structure for product families that
+share a transport layer and most commands but need per-model overrides.
+"""
+
+from telnetlib import Telnet
+import select
+import time
+
+
+class IP970BaseDevice:
+    """Shared telnet transport and command-template support for IP970 models."""
+
+    MODEL_NAME = "IP970"
+    PORT = 23
+    COMMAND_TEMPLATES = {
+        "get_version": "GET VER",
+        "get_ipaddr": "GET IPADDR",
+    }
+
+    def __init__(self, ip, port=None, timeout=2.0, debug=False):
+        self.ip = ip
+        self.port = self.PORT if port is None else port
+        self.timeout = timeout
+        self.debug = debug
+        self.tn = None
+
+    def _clean_response(self, response: str) -> str:
+        """Normalize telnet responses by removing prompts and blank lines."""
+        cleaned_lines = []
+        for line in response.replace("\r", "").split("\n"):
+            stripped = line.strip()
+            if not stripped or stripped == ">":
+                continue
+            if stripped.startswith(">"):
+                stripped = stripped[1:].strip()
+            if stripped:
+                cleaned_lines.append(stripped)
+        return "\n".join(cleaned_lines)
+
+    def _drain_socket(self):
+        """Clear unread telnet data before sending a new command."""
+        if self.tn is None or self.tn.get_socket() is None:
+            return
+
+        while True:
+            ready, _, _ = select.select([self.tn.get_socket()], [], [], 0)
+            if not ready:
+                break
+            if not self.tn.read_very_eager():
+                break
+
+    def _read_until_idle(self, timeout=None, idle_window=0.15) -> str:
+        """Read until the device stops sending data."""
+        timeout = self.timeout if timeout is None else timeout
+        start_time = time.time()
+        last_data_time = None
+        response_data = b""
+
+        while (time.time() - start_time) < timeout:
+            wait_time = idle_window if last_data_time is not None else 0.1
+            ready, _, _ = select.select([self.tn.get_socket()], [], [], wait_time)
+            if ready:
+                data = self.tn.read_very_eager()
+                if data:
+                    response_data += data
+                    last_data_time = time.time()
+                    continue
+            if last_data_time is not None and (time.time() - last_data_time) >= idle_window:
+                break
+
+        return self._clean_response(response_data.decode(errors="replace"))
+
+    def connect(self):
+        """Connect to the device."""
+        if self.tn is None:
+            self.tn = Telnet()
+            if self.debug:
+                self.tn.set_debuglevel(1)
+
+        try:
+            self.tn.open(self.ip, self.port, timeout=self.timeout)
+            self.tn.read_until(b">", timeout=self.timeout)
+            return True
+        except Exception as exc:
+            print(f"Failed to connect to {self.MODEL_NAME} at {self.ip}: {exc}")
+            self.tn = None
+            return False
+
+    def ensure_connection(self):
+        """Reconnect when the socket is not available."""
+        if self.tn is None or self.tn.get_socket() is None:
+            return self.connect()
+        return True
+
+    def send(self, command: str, timeout=None) -> str:
+        """Send one command and return the normalized response."""
+        if not self.ensure_connection():
+            return "Failed to establish connection"
+
+        try:
+            self._drain_socket()
+            self.tn.write(f"{command}\n".encode())
+            return self._read_until_idle(timeout=timeout)
+        except Exception as exc:
+            print(f"Failed to send command '{command}' to {self.ip}: {exc}")
+            self.disconnect()
+            return "Failed to send command"
+
+    def disconnect(self):
+        """Close the telnet session."""
+        if self.tn is not None:
+            try:
+                self.tn.close()
+            except Exception as exc:
+                print(f"Error closing Telnet connection: {exc}")
+            finally:
+                self.tn = None
+
+    def build_command(self, command_name: str, **kwargs) -> str:
+        """Build a device command from the shared template map."""
+        if command_name not in self.COMMAND_TEMPLATES:
+            raise KeyError(f"{command_name} is not defined for {self.MODEL_NAME}")
+        return self.COMMAND_TEMPLATES[command_name].format(**kwargs)
+
+    def run_template(self, command_name: str, **kwargs) -> str:
+        """Send one command defined in the template map."""
+        return self.send(self.build_command(command_name, **kwargs))
+
+    def get_version(self):
+        """Shared example getter."""
+        return self.run_template("get_version")
+
+    def get_ipaddr(self):
+        """Shared example getter."""
+        return self.run_template("get_ipaddr")

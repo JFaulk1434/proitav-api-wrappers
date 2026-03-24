@@ -1,0 +1,31 @@
+description: Central terminology overrides for generated API documentation.
+
+phrase_overrides:
+  api: API
+  avmute: AV Mute
+  autocec: Auto CEC
+  cec: CEC
+  dhcp: DHCP
+  edid: EDID
+  hdcp: HDCP
+  ip: IP
+  ipaddr: IP Address
+  ir: IR
+  mv: MV
+  rs232: RS-232
+  rs-232: RS-232
+  sdr: SDR
+
+token_overrides:
+  api: API
+  av: AV
+  cec: CEC
+  dhcp: DHCP
+  edid: EDID
+  hdcp: HDCP
+  ip: IP
+  ir: IR
+  mv: MV
+  rs232: RS-232
+  rs-232: RS-232
+  sdr: SDR

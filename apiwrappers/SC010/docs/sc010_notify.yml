@@ -1,0 +1,74 @@
+
+module: notify
+description: Asynchronous notification and event streaming for SC010 controller
+
+schema:
+  command:
+    required:
+      - command
+      - syntax
+      - description
+      - response
+    properties:
+      command: string
+      syntax: string
+      description: string
+      parameters: list
+      response:
+        type: string
+        schema: object
+
+commands:
+
+  enable:
+    command: "notify on"
+    syntax: "notify on"
+    description: "Enable notification stream"
+    parameters: []
+    response:
+      type: confirmation
+      schema: {}
+
+  disable:
+    command: "notify off"
+    syntax: "notify off"
+    description: "Disable notification stream"
+    parameters: []
+    response:
+      type: confirmation
+      schema: {}
+
+  endpoint:
+    command: "notify endpoint"
+    syntax: "notify endpoint"
+    description: "Notify device online/offline events"
+    parameters: []
+    response:
+      type: event
+      schema:
+        hostname: string
+        status: string
+
+  device_status:
+    command: "notify device status"
+    syntax: "notify device status"
+    description: "Stream device status updates"
+    parameters: []
+    response:
+      type: json
+      schema:
+        hostname: string
+        online: boolean
+        ip: string
+
+  matrix_change:
+    command: "notify matrix"
+    syntax: "notify matrix"
+    description: "Notify matrix routing changes"
+    parameters: []
+    response:
+      type: json
+      schema:
+        rx: string
+        tx: string
+        type: string

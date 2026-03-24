@@ -1,5 +1,6 @@
 """API Wrapper for MX0808-1023"""
 
+import re
 from telnetlib import Telnet
 from time import sleep
 import time
@@ -61,7 +62,7 @@ class MX0808_1023:
         if self.debug:
             self.tn.set_debuglevel(1)
         # Wait for and clear the welcome message
-        self.tn.read_until(b"Welcome to use matrix control system!")
+        self.tn.read_until(b"Welcome!")
         self.tn.write(b"\r\n")
         # Clear any remaining data in the buffer
         self.tn.read_very_eager()
@@ -1503,6 +1504,223 @@ class MX0808_1023:
         self.status["presets"]["saved_slots"] = saved_slots
         return saved_slots
 
+    def test_all_get_commands(self, debug=False) -> dict:
+        """Run all GET commands, measure response times, and print a report suitable for markdown."""
+        print("=" * 80)
+        print("MX0808-1023 DEVICE WRAPPER - COMPREHENSIVE GET COMMAND TEST")
+        print("=" * 80)
+
+        if self.tn is None:
+            print("Connecting to device...")
+            self.debug = debug
+            self.connect()
+            if self.tn is None:
+                print("ERROR: Failed to establish connection")
+                return {"success": 0, "failure": 0, "total": 0}
+
+        get_methods = [
+            ("get_version", "Get firmware version", "get ver", {}),
+            ("get_ip_address", "Get device IP address", "(stored)", {}),
+            (
+                "get_output_status",
+                "Get status of single output",
+                "get mp out1",
+                {"output": 1},
+            ),
+            ("get_output_all", "Get status of all outputs", "get mp all", {}),
+            ("get_audio_mode", "Get audio switch mode", "get audiosw_m", {}),
+            (
+                "get_audio_status",
+                "Get audio mapping for all outputs",
+                "get audiomp all",
+                {"output": "all"},
+            ),
+            (
+                "get_volume",
+                "Get volume gain for output 1",
+                "get volgain_data lineout1",
+                {"output": 1},
+            ),
+            (
+                "get_audio_mute",
+                "Get mute state for output 1",
+                "get audio_mute lineout1",
+                {"output": 1},
+            ),
+            (
+                "get_auto_cec",
+                "Get Auto CEC function for output 1",
+                "get autocec_fn out1",
+                {"output": 1},
+            ),
+            (
+                "get_auto_cec_delay",
+                "Get Auto CEC delay for output 1",
+                "get autocec_d out1",
+                {"output": 1},
+            ),
+            (
+                "get_cec_command",
+                "Get CEC power-on command for output 1",
+                "get ceccmd_edit out1 pwron",
+                {"output": 1, "command_type": "pwron"},
+            ),
+            (
+                "get_cec_power",
+                "Get CEC power state for all outputs",
+                "get cec_pwr all",
+                {"output": "all"},
+            ),
+            (
+                "get_hdcp_support",
+                "Get HDCP support for input 2",
+                "get hdcp_s in2",
+                {"input": 2},
+            ),
+            (
+                "get_hdcp_mode",
+                "Get HDCP mode for all outputs",
+                "get hdcp all",
+                {"output": "all"},
+            ),
+            ("get_edid", "Get EDID settings for all inputs", "get edid all", {}),
+            (
+                "get_edid_input",
+                "Get EDID setting for input 1",
+                "get edid in1",
+                {"input": 1},
+            ),
+            (
+                "read_edid",
+                "Read EDID block0 from output 1",
+                "get edid_r out1",
+                {"output": 1, "block": "block0"},
+            ),
+            (
+                "get_output_resolution",
+                "Get output resolution for output 1",
+                "get vidout_res out1",
+                {"output": 1},
+            ),
+            ("get_https", "Get HTTPS status", "get https", {}),
+            ("get_telnet_tls", "Get Telnet-TLS status", "get telnets", {}),
+            ("get_presets", "Get saved preset slots", "get preset", {}),
+        ]
+
+        results = []
+        success_count = 0
+        failure_count = 0
+
+        print(f"\nTesting {len(get_methods)} get methods...")
+        print("-" * 80)
+
+        for method_name, description, command, kwargs in get_methods:
+            print(f"\n{method_name}: {description}")
+            print(f"Command: {command}")
+            print("-" * 60)
+
+            try:
+                method = getattr(self, method_name)
+                start_time = time.time()
+                result = method(**kwargs)
+                execution_time = round(time.time() - start_time, 3)
+
+                if result is not None:
+                    result_str = str(result)
+                    if "ERROR" in result_str.upper():
+                        success = False
+                        failure_count += 1
+                        status = "FAILED (device error)"
+                    else:
+                        success = True
+                        success_count += 1
+                        status = "SUCCESS"
+                else:
+                    # read_edid can return None for unconnected; still count as success if no exception
+                    success = True
+                    success_count += 1
+                    status = "SUCCESS"
+                    result_str = "(no data / unconnected)"
+
+                print(f"{'=' * 80}")
+                print(f"Command: {command}")
+                print(f"Status: {status}")
+                print(f"Response: {result_str if result is not None else '(no data)'}")
+                print(f"Response time: {execution_time}s")
+                print(f"{'=' * 80}")
+
+                results.append(
+                    {
+                        "method": method_name,
+                        "command": command,
+                        "description": description,
+                        "success": success,
+                        "execution_time": execution_time,
+                        "result": result_str if result is not None else "(no data)",
+                        "status": status,
+                    }
+                )
+
+            except Exception as e:
+                failure_count += 1
+                status = f"FAILED (Exception: {str(e)})"
+                print(f"Status: {status}")
+                print(f"Exception: {str(e)}")
+
+                results.append(
+                    {
+                        "method": method_name,
+                        "command": command,
+                        "description": description,
+                        "success": False,
+                        "execution_time": 0,
+                        "result": None,
+                        "status": status,
+                    }
+                )
+
+        print("\n" + "=" * 80)
+        print("TEST SUMMARY")
+        print("=" * 80)
+        print(f"Total Methods Tested: {len(get_methods)}")
+        print(f"Successful: {success_count}")
+        print(f"Failed: {failure_count}")
+        success_rate = (success_count / len(get_methods) * 100) if get_methods else 0
+        print(f"Success Rate: {success_rate:.1f}%")
+
+        print("\n" + "-" * 80)
+        print("DETAILED RESULTS")
+        print("-" * 80)
+        print(f"{'Command':<40} {'Status':<15} {'Time':<8} {'Result'}")
+        print("-" * 80)
+
+        for result in results:
+            status_short = "PASS" if result["success"] else "FAIL"
+            time_str = (
+                f"{result['execution_time']}s"
+                if result["execution_time"] > 0
+                else "N/A"
+            )
+            result_str = str(result["result"])
+            result_str = (
+                result_str.replace("\n", " ").replace("\r", " ").replace("\t", " ")
+            )
+            result_str = re.sub(r"\s+", " ", result_str).strip()
+            if len(result_str) > 35:
+                result_str = result_str[:32] + "..."
+            print(
+                f"{result['command']:<40} {status_short:<15} {time_str:<8} {result_str}"
+            )
+
+        summary = {
+            "success": success_count,
+            "failure": failure_count,
+            "total": len(get_methods),
+            "success_rate": round(success_rate, 1),
+            "results": results,
+        }
+        return summary
+
 
 def test_device(mx):
     """Test all device functions and return status"""
@@ -1595,9 +1813,11 @@ def test_device(mx):
                 status_copy[section][subsection] = dict(
                     sorted(
                         status_copy[section][subsection].items(),
-                        key=lambda x: int(x[0].split()[-1])
-                        if x[0].split()[-1].isdigit()
-                        else x[0],
+                        key=lambda x: (
+                            int(x[0].split()[-1])
+                            if x[0].split()[-1].isdigit()
+                            else x[0]
+                        ),
                     )
                 )
             elif not subsection:
@@ -1609,9 +1829,9 @@ def test_device(mx):
             status_copy[section][subsection] = dict(
                 sorted(
                     status_copy[section][subsection].items(),
-                    key=lambda x: int(x[0].split()[-1])
-                    if x[0].split()[-1].isdigit()
-                    else x[0],
+                    key=lambda x: (
+                        int(x[0].split()[-1]) if x[0].split()[-1].isdigit() else x[0]
+                    ),
                 )
             )
 
@@ -1679,6 +1899,9 @@ def print_all_get_commands(mx):
 
 
 if __name__ == "__main__":
-    IP = "10.0.50.6"
-    mx = MX0808_1023(IP)
-    print_all_get_commands(mx)
+    IP = "10.0.50.9"
+    mx = MX0808_1023(IP, debug=False)
+    test_results = mx.test_all_get_commands()
+    if mx.tn:
+        mx.disconnect()
+    print(f"\nTest completed. Success rate: {test_results['success_rate']}%")

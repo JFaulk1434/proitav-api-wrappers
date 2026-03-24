@@ -1690,6 +1690,6 @@ class MV0401_Device:
 
 
 if __name__ == "__main__":
-    mv = MV0401_Device("192.168.50.170")
+    mv = MV0401_Device("10.0.50.21")
     print(mv.get_ip())
     print(mv.get_firmware())

@@ -1,0 +1,94 @@
+
+module: network
+description: Network configuration commands for SC010 controller
+
+schema:
+  command:
+    required:
+      - command
+      - syntax
+      - description
+      - response
+    properties:
+      command: string
+      syntax: string
+      description: string
+      parameters: list
+      response:
+        type: string
+        schema: object
+
+commands:
+
+  lan_av:
+    set:
+      command: "config set ip4addr"
+      syntax: "config set ip4addr <ip> netmask <mask> gateway <gw>"
+      description: "Set LAN(AV) IPv4 configuration"
+      parameters:
+        - ip
+        - netmask
+        - gateway
+      response:
+        type: confirmation
+        schema: {}
+
+    get:
+      command: "config get ip4addr"
+      syntax: "config get ip4addr"
+      description: "Get LAN(AV) IPv4 configuration"
+      parameters: []
+      response:
+        type: json
+        schema:
+          ip: string
+          netmask: string
+          gateway: string
+
+  lan_c:
+    set:
+      command: "config set ip4addr2"
+      syntax: "config set ip4addr2 <ip> netmask <mask> gateway <gw>"
+      description: "Set LAN(C) IPv4 configuration"
+      parameters:
+        - ip
+        - netmask
+        - gateway
+      response:
+        type: confirmation
+        schema: {}
+
+    get:
+      command: "config get ip4addr2"
+      syntax: "config get ip4addr2"
+      description: "Get LAN(C) IPv4 configuration"
+      parameters: []
+      response:
+        type: json
+        schema:
+          ip: string
+          netmask: string
+          gateway: string
+
+  dns:
+    set:
+      command: "config set dns"
+      syntax: "config set dns <primary> [secondary]"
+      description: "Set DNS servers"
+      parameters:
+        - primary
+        - secondary
+      response:
+        type: confirmation
+        schema: {}
+
+    get:
+      command: "config get dns"
+      syntax: "config get dns"
+      description: "Get DNS servers"
+      parameters: []
+      response:
+        type: json
+        schema:
+          primary: string
+          secondary: string

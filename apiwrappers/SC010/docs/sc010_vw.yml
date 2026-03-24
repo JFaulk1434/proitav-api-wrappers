@@ -1,0 +1,90 @@
+
+module: vw
+description: Video wall management commands for SC010 controller
+
+schema:
+  command:
+    required:
+      - command
+      - syntax
+      - description
+      - response
+    properties:
+      command: string
+      syntax: string
+      description: string
+      parameters: list
+      response:
+        type: string
+        schema: object
+
+commands:
+
+  list:
+    command: "vw get"
+    syntax: "vw get"
+    description: "List all video walls"
+    parameters: []
+    response:
+      type: list
+      schema:
+        vw_name: string
+
+  info:
+    command: "vw info"
+    syntax: "vw info <vw_name>"
+    description: "Get video wall configuration"
+    parameters:
+      - vw_name
+    response:
+      type: json
+      schema:
+        name: string
+        rows: integer
+        cols: integer
+        layout: list
+
+  create:
+    command: "vw add"
+    syntax: "vw add <vw_name> <rows> <cols> <tx>"
+    description: "Create a video wall"
+    parameters:
+      - vw_name
+      - rows
+      - cols
+      - tx
+    response:
+      type: confirmation
+      schema: {}
+
+  delete:
+    command: "vw rm"
+    syntax: "vw rm <vw_name>"
+    description: "Remove a video wall"
+    parameters:
+      - vw_name
+    response:
+      type: confirmation
+      schema: {}
+
+  bind:
+    command: "vw bind"
+    syntax: "vw bind <vw_name> <rx...>"
+    description: "Bind RX devices to video wall"
+    parameters:
+      - vw_name
+      - rx_list
+    response:
+      type: confirmation
+      schema: {}
+
+  unbind:
+    command: "vw unbind"
+    syntax: "vw unbind <vw_name> <rx...>"
+    description: "Unbind RX devices from video wall"
+    parameters:
+      - vw_name
+      - rx_list
+    response:
+      type: confirmation
+      schema: {}

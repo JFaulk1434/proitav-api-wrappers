@@ -91,12 +91,25 @@ class SC010_Device:
         return response
 
     def _parse_json_response(self, response):
-        """Parse JSON response, handling prefixes."""
+        """Parse JSON response, handling prefixes. Returns {} or [] on failure."""
+        if not response:
+            return {}
+        response_stripped = response.strip()
+        if "unknown command" in response_stripped.lower():
+            logger.warning(
+                "SC010 returned 'unknown command' for previous request; "
+                "command may not be supported on this firmware."
+            )
+            return {}
         try:
             cleaned = self._strip_prefix(response)
             return json.loads(cleaned)
         except json.JSONDecodeError as e:
-            logger.error(f"JSON decoding error: {e}, response: {response}")
+            logger.warning(
+                "SC010 JSON decode failed: %s, response: %s",
+                e,
+                response[:200] + ("..." if len(response) > 200 else ""),
+            )
             return {}
 
     # Device Commands (from sc010_device.yml)
@@ -184,6 +197,129 @@ class SC010_Device:
             return response.strip()
         return None
 
+    # Matrix Commands (from sc010_matrix.yml)
+
+    def matrix_video_set(self, *routes) -> str:
+        """
+        Route video from TX to one or more RX endpoints.
+
+        Args:
+            *routes: One or more route strings in format "TX RX" or comma-separated "TX RX,TX RX".
+
+        Returns:
+            str: Confirmation response from the device.
+        """
+        if not routes:
+            raise ValueError("At least one route must be provided")
+        # Join routes with commas if multiple, or use single route
+        route_str = ",".join(routes) if len(routes) > 1 else routes[0]
+        command = f"matrix video set {route_str}"
+        return self.send(command)
+
+    def matrix_video_get(self, *rx_list) -> Union[List[Dict], str]:
+        """
+        Get current video routing status.
+
+        Args:
+            *rx_list: Optional RX endpoint(s) to query. If none provided, returns all routes.
+
+        Returns:
+            list or str: Video routing information. Returns list of dicts if JSON, otherwise string.
+        """
+        if rx_list:
+            command = f"matrix video get {' '.join(rx_list)}"
+        else:
+            command = "matrix video get"
+        response = self.send(command)
+        if response:
+            try:
+                return self._parse_json_response(response)
+            except Exception:
+                return response
+        return []
+
+    def matrix_video_clear(self, *rx_list) -> str:
+        """
+        Clear video routing for RX endpoint(s).
+
+        Args:
+            *rx_list: One or more RX endpoints to clear.
+
+        Returns:
+            str: Confirmation response from the device.
+        """
+        if not rx_list:
+            raise ValueError("At least one RX endpoint must be provided")
+        command = f"matrix video clear {' '.join(rx_list)}"
+        return self.send(command)
+
+    def matrix_audio_set(self, *routes) -> str:
+        """
+        Route audio from TX to one or more RX endpoints.
+
+        Args:
+            *routes: One or more route strings in format "TX RX" or comma-separated "TX RX,TX RX".
+
+        Returns:
+            str: Confirmation response from the device.
+        """
+        if not routes:
+            raise ValueError("At least one route must be provided")
+        # Join routes with commas if multiple, or use single route
+        route_str = ",".join(routes) if len(routes) > 1 else routes[0]
+        command = f"matrix audio set {route_str}"
+        return self.send(command)
+
+    def matrix_audio_get(self, *rx_list) -> Union[List[Dict], str]:
+        """
+        Get current audio routing status.
+
+        Args:
+            *rx_list: Optional RX endpoint(s) to query. If none provided, returns all routes.
+
+        Returns:
+            list or str: Audio routing information. Returns list of dicts if JSON, otherwise string.
+        """
+        if rx_list:
+            command = f"matrix audio get {' '.join(rx_list)}"
+        else:
+            command = "matrix audio get"
+        response = self.send(command)
+        if response:
+            try:
+                return self._parse_json_response(response)
+            except Exception:
+                return response
+        return []
+
+    def matrix_audio_clear(self, *rx_list) -> str:
+        """
+        Clear audio routing for RX endpoint(s).
+
+        Args:
+            *rx_list: One or more RX endpoints to clear.
+
+        Returns:
+            str: Confirmation response from the device.
+        """
+        if not rx_list:
+            raise ValueError("At least one RX endpoint must be provided")
+        command = f"matrix audio clear {' '.join(rx_list)}"
+        return self.send(command)
+
+    def matrix_status(self) -> Dict:
+        """
+        Get full matrix routing status.
+
+        Returns:
+            dict: Full matrix status with video and audio routing information.
+        """
+        command = "matrix get"
+        response = self.send(command)
+        if response:
+            return self._parse_json_response(response)
+        return {}
+
     # Additional helper methods for compatibility with existing code
 
     def get_version(self) -> dict:
@@ -248,7 +384,8 @@ class SC010_Device:
         """Obtains all device information and returns a list of dictionaries."""
         response = self.send("config get devicejsonstring")
         if response:
-            return self._parse_json_response(response)
+            data = self._parse_json_response(response)
+            return data if isinstance(data, list) else []
         return []
 
     def get_scene_json(self) -> dict:
@@ -453,6 +590,21 @@ class SC010_Device:
                 "Get device information (device command)",
                 "device info",
             ),
+            (
+                "matrix_video_get",
+                "Get current video routing status",
+                "matrix video get",
+            ),
+            (
+                "matrix_audio_get",
+                "Get current audio routing status",
+                "matrix audio get",
+            ),
+            (
+                "matrix_status",
+                "Get full matrix routing status",
+                "matrix status",
+            ),
         ]
 
         results = []
@@ -465,6 +617,23 @@ class SC010_Device:
             device_list = self.get_devicelist()
         except Exception as e:
             print(f"Warning: Could not get device list: {e}")
+
+        # Get group list for testing group-specific commands
+        group_list = []
+        try:
+            group_list_result = self.group_list()
+            if isinstance(group_list_result, list) and len(group_list_result) > 0:
+                # Extract group names if it's a list of dicts
+                if isinstance(group_list_result[0], dict):
+                    group_list = [
+                        g.get("group_name", "")
+                        for g in group_list_result
+                        if g.get("group_name")
+                    ]
+                else:
+                    group_list = group_list_result
+        except Exception as e:
+            print(f"Warning: Could not get group list: {e}")
 
         print(f"\nTesting {len(get_methods)} get methods...")
         print("-" * 80)
@@ -491,6 +660,31 @@ class SC010_Device:
                         # No devices available, skip test
                         failure_count += 1
                         status = "SKIPPED (no devices available)"
+                        print(f"Status: {status}")
+                        results.append(
+                            {
+                                "method": method_name,
+                                "command": command,
+                                "description": description,
+                                "success": False,
+                                "execution_time": 0,
+                                "result": None,
+                                "status": status,
+                            }
+                        )
+                        continue
+                elif method_name == "group_info":
+                    if group_list and len(group_list) > 0:
+                        # Use first group for testing
+                        test_group = group_list[0]
+                        command = f"{command} {test_group}"
+                        start_time = time.time()
+                        result = method(test_group)
+                        execution_time = round(time.time() - start_time, 3)
+                    else:
+                        # No groups available, skip test
+                        failure_count += 1
+                        status = "SKIPPED (no groups available)"
                         print(f"Status: {status}")
                         results.append(
                             {
@@ -631,9 +825,12 @@ class SC010_Device:
             if len(result_str) > 35:
                 result_str = result_str[:32] + "..."
 
-            print(
-                f"{result['command']:<40} {status_short:<15} {time_str:<8} {result_str}"
-            )
+            # Truncate command to fit in 40-character column
+            command_str = result["command"]
+            if len(command_str) > 37:
+                command_str = command_str[:34] + "..."
+
+            print(f"{command_str:<40} {status_short:<15} {time_str:<8} {result_str}")
 
         # Return summary for programmatic use
         summary = {
@@ -651,7 +848,7 @@ class SC010_Device:
 
 # Example usage:
 if __name__ == "__main__":
-    device = SC010_Device("10.0.30.8", debug=False)
+    device = SC010_Device("10.0.30.15", debug=False)
 
     # Test all get commands
     test_results = device.test_all_get_commands()

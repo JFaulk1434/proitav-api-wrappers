@@ -1,12 +1,16 @@
 # API Wrapper Conventions
 
-This document defines conventions for ProIT AV API wrappers. Use it together with `.cursorrules` when adding or updating product wrappers. The goal is consistent structure, testability, and **report-ready output** you can copy-paste into internal reports.
+This document defines the repository-level conventions for ProIT AV API wrappers.
+
+For the full step-by-step process for new products, start with `docs/NEW_WRAPPER_WORKFLOW.md`.
+
+Use this file as the compact rules reference and formatting standard.
 
 ---
 
 ## 1. Test report format (exact template)
 
-Every wrapper test must print a report in this structure. Output is plain text, copy-paste friendly for markdown or other reports.
+Every standalone wrapper test file must print a report in this structure. Output is plain text, copy-paste friendly for markdown or other reports.
 
 ```python
 model = "SC010"  # or your product model
@@ -42,7 +46,7 @@ For each GET method, include:
 
 Example:
 
-```
+```text
 get_version: Get API and system version information
 Command: config get version
 ------------------------------------------------------------
@@ -180,21 +184,31 @@ commands:
 ```
 
 - Same top-level keys and nesting as `sc010_device.yml`.
-- One YAML per logical module; multiple files OK (e.g. `sc010_device.yml`, `sc010_config.yml`).
+- Default to one YAML file per product in `docs/`.
+- Only split into multiple YAML files when a product is unusually large or there is a strong reason to separate modules.
 
 ---
 
 ## 6. Test file layout
 
 - **Path**: `apiwrappers/<ProductName>/test_<ProductName>_api.py`
+- **Do not** put the full GET-style test runner inside the wrapper class for new wrappers.
+- **Top-of-file settings** should be obvious when the file is opened:
+  - `DEVICE_IP`
+  - `PORT`
+  - `TIMEOUT`
+  - `DEBUG`
+  - `MARKDOWN_OUTPUT`
 - **Content**:
-  1. Docstring: purpose, usage, example command line.
-  2. Imports (including `time` for response-time measurement).
-  3. Setup: connect, save settings.
-  4. Loop over all GET methods: measure time, run method, record result, print per-command block.
-  5. Teardown: restore settings, disconnect.
-  6. Summary: counts, success rate, optional table.
-  7. `if __name__ == "__main__"`: parse CLI (e.g. device IP, `--debug`), run test, exit with 0/1 based on success rate if desired.
+  1. Docstring describing purpose and usage.
+  2. Imports and repository-root helper import setup if needed.
+  3. Visible device configuration variables near the top.
+  4. `GET_COMMANDS` or equivalent read-style command manifest.
+  5. Setup: connect, save settings if needed.
+  6. Loop over all read-style commands: measure time, run method, record result, print per-command block.
+  7. Teardown: restore settings, disconnect.
+  8. Summary: counts, success rate, optional table.
+  9. `if __name__ == "__main__"`: run directly in Cursor/VSCode without requiring CLI arguments.
 
 ---
 
@@ -203,17 +217,49 @@ commands:
 - Use **plain text** and fixed-width separators (`=`, `-`).
 - Avoid escape codes or fancy formatting that break when pasted into markdown or email.
 - Keep lines reasonably short so they don’t wrap badly in reports.
-- Optional: provide a `--markdown` flag that prints the same structure as fenced markdown (e.g. headings, code blocks) for direct paste into Confluence or similar.
+- Provide a clearly visible markdown mode toggle in the test file, such as `MARKDOWN_OUTPUT = True`.
+- Tests may still support CLI overrides, but they should run cleanly from `__main__` without requiring CLI input.
 
 ---
 
-## 8. Reference implementations
+## 8. Shared Automation
+
+- Use `new_wrapper_scaffold.py` to create a new wrapper package skeleton.
+- Use `templates/` for maintainable wrapper, test, and YAML templates.
+- Use `test_report_utils.py` for shared report rendering and GET-style command execution.
+- Use `export_api_docs.py` to generate Markdown, HTML, and PDF documentation from the YAML source file.
+
+## 9. Product Families
+
+For products that share a common API with small model-specific differences:
+
+- keep a family folder
+- move shared transport and common commands into a family base module
+- keep thin model-specific wrappers for overrides and additions
+- avoid duplicating nearly identical wrappers per model
+
+Example target structure:
+
+```text
+apiwrappers/IP970_Family/
+├── base.py
+├── discovery.py
+├── IPD970/
+│   └── IPD970.py
+├── IPE970/
+│   └── IPE970.py
+└── docs/
+```
+
+## 10. Reference implementations
 
 | Item | Location |
-|------|----------|
+| ------ | ---------- |
 | API YAML style | `apiwrappers/SC010/docs/sc010_device.yml` |
-| Wrapper + `test_all_get_commands` | `apiwrappers/SC010/SC010.py` |
-| Standalone test script | `apiwrappers/MS0402_N011/test_MS0402_N011_api.py` |
+| Full workflow guide | `docs/NEW_WRAPPER_WORKFLOW.md` |
+| Standalone test script direction | `apiwrappers/MX0404_N301/test_MX0404_N301_api.py` |
+| Legacy embedded test reference | `apiwrappers/SC010/SC010.py` |
 | Debug flag in connection | `apiwrappers/FSC640/FSC640.py`, `apiwrappers/MS0402_N011/MS0402_N011.py` |
+| Family-style shared base example | `apiwrappers/IP5100/IP5100.py` |
 
-When adding a new wrapper, align its structure, YAML, and test report with these references and the templates above.
+When adding a new wrapper, align its structure, YAML, standalone test, and generated API docs with these references and the shared templates.

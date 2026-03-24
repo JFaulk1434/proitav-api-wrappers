@@ -1,0 +1,102 @@
+
+module: matrix
+description: Video and audio routing commands for SC010 controller
+
+schema:
+  command:
+    required:
+      - command
+      - syntax
+      - description
+      - response
+    properties:
+      command: string
+      syntax: string
+      description: string
+      parameters: list
+      response:
+        type: string
+        schema: object
+
+commands:
+
+  video:
+    set:
+      command: "matrix video set"
+      syntax: "matrix video set <TX RX...>[,<TX RX...>]"
+      description: "Route video from TX to one or more RX endpoints"
+      parameters:
+        - tx
+        - rx_list
+      response:
+        type: confirmation
+        schema: {}
+
+    get:
+      command: "matrix video get"
+      syntax: "matrix video get [RX...]"
+      description: "Get current video routing status"
+      parameters:
+        - rx_list
+      response:
+        type: list
+        schema:
+          tx: string
+          rx: string
+
+    clear:
+      command: "matrix video clear"
+      syntax: "matrix video clear <RX...>"
+      description: "Clear video routing for RX endpoint(s)"
+      parameters:
+        - rx_list
+      response:
+        type: confirmation
+        schema: {}
+
+  audio:
+    set:
+      command: "matrix audio set"
+      syntax: "matrix audio set <TX RX...>[,<TX RX...>]"
+      description: "Route audio from TX to one or more RX endpoints"
+      parameters:
+        - tx
+        - rx_list
+      response:
+        type: confirmation
+        schema: {}
+
+    get:
+      command: "matrix audio get"
+      syntax: "matrix audio get [RX...]"
+      description: "Get current audio routing status"
+      parameters:
+        - rx_list
+      response:
+        type: list
+        schema:
+          tx: string
+          rx: string
+
+    clear:
+      command: "matrix audio clear"
+      syntax: "matrix audio clear <RX...>"
+      description: "Clear audio routing for RX endpoint(s)"
+      parameters:
+        - rx_list
+      response:
+        type: confirmation
+        schema: {}
+
+  status:
+    command: "matrix status"
+    syntax: "matrix status"
+    description: "Get full matrix routing status"
+    parameters: []
+    response:
+      type: json
+      schema:
+        video:
+          rx: tx
+        audio:
+          rx: tx

@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Telnet API commands for the MX0404-N301 matrix switcher</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 2rem auto; max-width: 960px; line-height: 1.5; color: #222; }
+code, pre { font-family: Menlo, Consolas, monospace; }
+pre { background: #f5f5f5; padding: 1rem; overflow-x: auto; }
+h1, h2, h3, h4 { margin-top: 1.5rem; }
+ul { padding-left: 1.5rem; }
+</style>
+</head>
+<body>
+<h1 id="device-api-reference">DEVICE API Reference</h1>
+
+<p>Telnet API commands for the MX0404-N301 matrix switcher</p>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ul>
+<li><a href="#switch-get">Switch / Get</a></li>
+<li><a href="#switch-set">Switch / Set</a></li>
+<li><a href="#audio-mute-get">Audio Mute / Get</a></li>
+<li><a href="#audio-mute-set">Audio Mute / Set</a></li>
+<li><a href="#audio-switch-mode-get">Audio Switch Mode / Get</a></li>
+<li><a href="#audio-switch-mode-set">Audio Switch Mode / Set</a></li>
+<li><a href="#avmute-get">AV Mute / Get</a></li>
+<li><a href="#avmute-set">AV Mute / Set</a></li>
+<li><a href="#cec-power">CEC Power</a></li>
+<li><a href="#cec-auto-get">CEC Auto / Get</a></li>
+<li><a href="#cec-auto-set">CEC Auto / Set</a></li>
+<li><a href="#cec-delay-get">CEC Delay / Get</a></li>
+<li><a href="#cec-delay-set">CEC Delay / Set</a></li>
+<li><a href="#input-hdcp-support-get">Input HDCP Support / Get</a></li>
+<li><a href="#input-hdcp-support-set">Input HDCP Support / Set</a></li>
+<li><a href="#output-hdcp-mode-get">Output HDCP Mode / Get</a></li>
+<li><a href="#output-hdcp-mode-set">Output HDCP Mode / Set</a></li>
+<li><a href="#edid-get">EDID / Get</a></li>
+<li><a href="#edid-set">EDID / Set</a></li>
+<li><a href="#edid-write">EDID Write</a></li>
+<li><a href="#edid-read">EDID Read</a></li>
+<li><a href="#preset-save">Preset / Save</a></li>
+<li><a href="#preset-restore">Preset / Restore</a></li>
+<li><a href="#ir-system-code-get">IR System Code / Get</a></li>
+<li><a href="#ir-system-code-set">IR System Code / Set</a></li>
+<li><a href="#ip-address-get">IP Address / Get</a></li>
+<li><a href="#ip-address-set">IP Address / Set</a></li>
+<li><a href="#network-mode-get">Network Mode / Get</a></li>
+<li><a href="#network-mode-set">Network Mode / Set</a></li>
+<li><a href="#standby-get">Standby / Get</a></li>
+<li><a href="#standby-set">Standby / Set</a></li>
+<li><a href="#input-status-connection">Input Status / Connection</a></li>
+<li><a href="#input-status-signal">Input Status / Signal</a></li>
+<li><a href="#input-status-format">Input Status / Format</a></li>
+<li><a href="#input-status-hdcp">Input Status / HDCP</a></li>
+<li><a href="#input-status-stretch-get">Input Status / Stretch / Get</a></li>
+<li><a href="#input-status-stretch-set">Input Status / Stretch / Set</a></li>
+<li><a href="#output-status-connection">Output Status / Connection</a></li>
+<li><a href="#output-status-signal">Output Status / Signal</a></li>
+<li><a href="#output-status-video-format">Output Status / Video Format</a></li>
+<li><a href="#output-status-audio-format">Output Status / Audio Format</a></li>
+<li><a href="#output-status-hdcp">Output Status / HDCP</a></li>
+<li><a href="#output-status-scaling-get">Output Status / Scaling / Get</a></li>
+<li><a href="#output-status-scaling-set">Output Status / Scaling / Set</a></li>
+<li><a href="#output-status-resolution-get">Output Status / Resolution / Get</a></li>
+<li><a href="#output-status-resolution-set">Output Status / Resolution / Set</a></li>
+<li><a href="#output-status-forced-sdr-get">Output Status / Forced SDR / Get</a></li>
+<li><a href="#output-status-forced-sdr-set">Output Status / Forced SDR / Set</a></li>
+<li><a href="#output-status-active-get">Output Status / Active / Get</a></li>
+<li><a href="#output-status-active-set">Output Status / Active / Set</a></li>
+<li><a href="#output-status-mode-get">Output Status / Mode / Get</a></li>
+<li><a href="#output-status-mode-set">Output Status / Mode / Set</a></li>
+<li><a href="#videowall-window-source-get">Videowall Window Source / Get</a></li>
+<li><a href="#videowall-window-source-set">Videowall Window Source / Set</a></li>
+<li><a href="#multiview-window-source-get">Multiview Window Source / Get</a></li>
+<li><a href="#multiview-window-source-set">Multiview Window Source / Set</a></li>
+<li><a href="#multiview-audio-switch-get">Multiview Audio Switch / Get</a></li>
+<li><a href="#multiview-audio-switch-set">Multiview Audio Switch / Set</a></li>
+<li><a href="#multiview-window-border-get">Multiview Window Border / Get</a></li>
+<li><a href="#multiview-window-border-set">Multiview Window Border / Set</a></li>
+<li><a href="#multiview-window-border-attr-get">Multiview Window Border Attr / Get</a></li>
+<li><a href="#multiview-window-border-attr-set">Multiview Window Border Attr / Set</a></li>
+<li><a href="#legacy-multiview-layout-get">Legacy Multiview / Layout / Get</a></li>
+<li><a href="#legacy-multiview-layout-set">Legacy Multiview / Layout / Set</a></li>
+<li><a href="#legacy-multiview-dual-source-get">Legacy Multiview / Dual Source / Get</a></li>
+<li><a href="#legacy-multiview-dual-source-set">Legacy Multiview / Dual Source / Set</a></li>
+<li><a href="#legacy-multiview-pip-source-get">Legacy Multiview / Pip Source / Get</a></li>
+<li><a href="#legacy-multiview-pip-source-set">Legacy Multiview / Pip Source / Set</a></li>
+<li><a href="#legacy-multiview-quad-source-get">Legacy Multiview / Quad Source / Get</a></li>
+<li><a href="#legacy-multiview-quad-source-set">Legacy Multiview / Quad Source / Set</a></li>
+<li><a href="#legacy-multiview-master-source-get">Legacy Multiview / Master Source / Get</a></li>
+<li><a href="#legacy-multiview-master-source-set">Legacy Multiview / Master Source / Set</a></li>
+<li><a href="#legacy-multiview-pip-size-get">Legacy Multiview / Pip Size / Get</a></li>
+<li><a href="#legacy-multiview-pip-size-set">Legacy Multiview / Pip Size / Set</a></li>
+<li><a href="#legacy-multiview-pip-position-get">Legacy Multiview / Pip Position / Get</a></li>
+<li><a href="#legacy-multiview-pip-position-set">Legacy Multiview / Pip Position / Set</a></li>
+<li><a href="#legacy-videowall-wall-map-get">Legacy Videowall / Wall Map / Get</a></li>
+<li><a href="#legacy-videowall-wall-map-set">Legacy Videowall / Wall Map / Set</a></li>
+<li><a href="#legacy-videowall-mode-get">Legacy Videowall / Mode / Get</a></li>
+<li><a href="#legacy-videowall-mode-set">Legacy Videowall / Mode / Set</a></li>
+<li><a href="#legacy-videowall-bezel-get">Legacy Videowall / Bezel / Get</a></li>
+<li><a href="#legacy-videowall-bezel-set">Legacy Videowall / Bezel / Set</a></li>
+<li><a href="#legacy-videowall-rotation-get">Legacy Videowall / Rotation / Get</a></li>
+<li><a href="#legacy-videowall-rotation-set">Legacy Videowall / Rotation / Set</a></li>
+<li><a href="#audio-follow-window-get">Audio Follow Window / Get</a></li>
+<li><a href="#audio-follow-window-set">Audio Follow Window / Set</a></li>
+<li><a href="#system-firmware-version">System / Firmware Version</a></li>
+<li><a href="#system-hardware-version">System / Hardware Version</a></li>
+<li><a href="#system-factory-reset">System / Factory Reset</a></li>
+<li><a href="#system-reboot">System / Reboot</a></li>
+<li><a href="#system-api-help">System / API Help</a></li>
+</ul>
+
+<h2 id="command-reference">Command Reference</h2>
+
+<div id="switch-get"></div>
+
+<h3 id="switch-get">Switch / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET MP</code></li>
+<li><strong>Syntax</strong>: <code>GET MP &lt;output|all&gt;</code></li>
+<li><strong>Description</strong>: Get the input mapping for one output or all outputs</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+mapping: string
+</code></pre>
+
+<div id="switch-set"></div>
+
+<h3 id="switch-set">Switch / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET SW</code></li>
+<li><strong>Syntax</strong>: <code>SET SW &lt;input&gt; &lt;output|all&gt;</code></li>
+<li><strong>Description</strong>: Route one input to one output or to all outputs</li>
+<li><strong>Parameters</strong>: input, output</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+input: string
+output: string
+</code></pre>
+
+<div id="audio-mute-get"></div>
+
+<h3 id="audio-mute-get">Audio Mute / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET AUDIO_MUTE</code></li>
+<li><strong>Syntax</strong>: <code>GET AUDIO_MUTE &lt;zone&gt;</code></li>
+<li><strong>Description</strong>: Get the mute state for an analog audio zone</li>
+<li><strong>Parameters</strong>: zone</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+zone: string
+state: string
+</code></pre>
+
+<div id="audio-mute-set"></div>
+
+<h3 id="audio-mute-set">Audio Mute / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET AUDIO_MUTE</code></li>
+<li><strong>Syntax</strong>: <code>SET AUDIO_MUTE &lt;zone&gt; &lt;on|off&gt;</code></li>
+<li><strong>Description</strong>: Mute or unmute an analog audio zone</li>
+<li><strong>Parameters</strong>: zone, state</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+zone: string
+state: string
+</code></pre>
+
+<div id="audio-switch-mode-get"></div>
+
+<h3 id="audio-switch-mode-get">Audio Switch Mode / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET AUDIOSW_M</code></li>
+<li><strong>Syntax</strong>: <code>GET AUDIOSW_M &lt;out1|out2|all&gt;</code></li>
+<li><strong>Description</strong>: Get the audio switching mode for one or all audio-follow outputs</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+mode: string
+</code></pre>
+
+<div id="audio-switch-mode-set"></div>
+
+<h3 id="audio-switch-mode-set">Audio Switch Mode / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET AUDIOSW_M</code></li>
+<li><strong>Syntax</strong>: <code>SET AUDIOSW_M &lt;out1|out2|all&gt; &lt;independent|followvm&gt;</code></li>
+<li><strong>Description</strong>: Set the audio switching mode for one or all audio-follow outputs</li>
+<li><strong>Parameters</strong>: output, mode</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+mode: string
+</code></pre>
+
+<div id="avmute-get"></div>
+
+<h3 id="av-mute-get">AV Mute / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET AVMUTE</code></li>
+<li><strong>Syntax</strong>: <code>GET AVMUTE &lt;output&gt;</code></li>
+<li><strong>Description</strong>: Get the AV mute state on an HDMI output</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="avmute-set"></div>
+
+<h3 id="av-mute-set">AV Mute / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET AVMUTE</code></li>
+<li><strong>Syntax</strong>: <code>SET AVMUTE &lt;output&gt; &lt;on|off&gt;</code></li>
+<li><strong>Description</strong>: Enable or disable AV mute on an HDMI output</li>
+<li><strong>Parameters</strong>: output, state</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="cec-power"></div>
+
+<h2 id="cec-power">CEC Power</h2>
+
+<ul>
+<li><strong>Command</strong>: <code>SET CEC_PWR</code></li>
+<li><strong>Syntax</strong>: <code>SET CEC_PWR &lt;output|all&gt; &lt;on|off&gt;</code></li>
+<li><strong>Description</strong>: Send a CEC power command to one or all sinks</li>
+<li><strong>Parameters</strong>: output, state</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="cec-auto-get"></div>
+
+<h3 id="cec-auto-get">CEC Auto / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET AUTOCEC_FN</code></li>
+<li><strong>Syntax</strong>: <code>GET AUTOCEC_FN &lt;output|all&gt;</code></li>
+<li><strong>Description</strong>: Get the automatic CEC power state</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="cec-auto-set"></div>
+
+<h3 id="cec-auto-set">CEC Auto / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET AUTOCEC_FN</code></li>
+<li><strong>Syntax</strong>: <code>SET AUTOCEC_FN &lt;output|all&gt; &lt;on|off&gt;</code></li>
+<li><strong>Description</strong>: Enable or disable automatic CEC power behavior</li>
+<li><strong>Parameters</strong>: output, state</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="cec-delay-get"></div>
+
+<h3 id="cec-delay-get">CEC Delay / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET AUTOCEC_D</code></li>
+<li><strong>Syntax</strong>: <code>GET AUTOCEC_D &lt;output|all&gt;</code></li>
+<li><strong>Description</strong>: Get the automatic CEC power-off delay</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+minutes: integer
+</code></pre>
+
+<div id="cec-delay-set"></div>
+
+<h3 id="cec-delay-set">CEC Delay / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET AUTOCEC_D</code></li>
+<li><strong>Syntax</strong>: <code>SET AUTOCEC_D &lt;output|all&gt; &lt;minutes&gt;</code></li>
+<li><strong>Description</strong>: Set the automatic CEC power-off delay</li>
+<li><strong>Parameters</strong>: output, minutes</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+minutes: integer
+</code></pre>
+
+<div id="input-hdcp-support-get"></div>
+
+<h3 id="input-hdcp-support-get">Input HDCP Support / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET HDCP_S</code></li>
+<li><strong>Syntax</strong>: <code>GET HDCP_S &lt;input|all&gt;</code></li>
+<li><strong>Description</strong>: Get the HDCP support state for one or all inputs</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+state: string
+</code></pre>
+
+<div id="input-hdcp-support-set"></div>
+
+<h3 id="input-hdcp-support-set">Input HDCP Support / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET HDCP_S</code></li>
+<li><strong>Syntax</strong>: <code>SET HDCP_S &lt;input|all&gt; &lt;on|off&gt;</code></li>
+<li><strong>Description</strong>: Enable or disable HDCP support on one or all inputs</li>
+<li><strong>Parameters</strong>: input, state</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+input: string
+state: string
+</code></pre>
+
+<div id="output-hdcp-mode-get"></div>
+
+<h3 id="output-hdcp-mode-get">Output HDCP Mode / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET HDCP</code></li>
+<li><strong>Syntax</strong>: <code>GET HDCP &lt;output|all&gt;</code></li>
+<li><strong>Description</strong>: Get the HDCP mode for one or all outputs</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+mode: string
+</code></pre>
+
+<div id="output-hdcp-mode-set"></div>
+
+<h3 id="output-hdcp-mode-set">Output HDCP Mode / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET HDCP</code></li>
+<li><strong>Syntax</strong>: <code>SET HDCP &lt;output|all&gt; &lt;follow|auto|hdcp1.x|off&gt;</code></li>
+<li><strong>Description</strong>: Set the HDCP mode for one or all outputs</li>
+<li><strong>Parameters</strong>: output, mode</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+mode: string
+</code></pre>
+
+<div id="edid-get"></div>
+
+<h3 id="edid-get">EDID / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET EDID</code></li>
+<li><strong>Syntax</strong>: <code>GET EDID &lt;input|all&gt;</code></li>
+<li><strong>Description</strong>: Get the EDID preset assigned to one input or all inputs</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+edid: string
+</code></pre>
+
+<div id="edid-set"></div>
+
+<h3 id="edid-set">EDID / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET EDID</code></li>
+<li><strong>Syntax</strong>: <code>SET EDID &lt;input|all&gt; &lt;profile&gt;</code></li>
+<li><strong>Description</strong>: Assign an EDID preset to one or all inputs</li>
+<li><strong>Parameters</strong>: input, profile</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+input: string
+profile: integer
+</code></pre>
+
+<div id="edid-write"></div>
+
+<h2 id="edid-write">EDID Write</h2>
+
+<ul>
+<li><strong>Command</strong>: <code>SET EDID_W</code></li>
+<li><strong>Syntax</strong>: <code>SET EDID_W &lt;input|all&gt; &lt;block0|block1&gt; &lt;hex_data&gt;</code></li>
+<li><strong>Description</strong>: Write EDID block data to an input</li>
+<li><strong>Parameters</strong>: input, block, hex_data</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+input: string
+block: string
+status: string
+</code></pre>
+
+<div id="edid-read"></div>
+
+<h2 id="edid-read">EDID Read</h2>
+
+<ul>
+<li><strong>Command</strong>: <code>GET EDID_R</code></li>
+<li><strong>Syntax</strong>: <code>GET EDID_R &lt;output&gt;</code></li>
+<li><strong>Description</strong>: Read EDID block data from an output</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+block: string
+data: string
+</code></pre>
+
+<div id="preset-save"></div>
+
+<h3 id="preset-save">Preset / Save</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SAVE PRESET</code></li>
+<li><strong>Syntax</strong>: <code>SAVE PRESET &lt;slot&gt;</code></li>
+<li><strong>Description</strong>: Save the current routing state to a preset slot</li>
+<li><strong>Parameters</strong>: slot</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+slot: integer
+</code></pre>
+
+<div id="preset-restore"></div>
+
+<h3 id="preset-restore">Preset / Restore</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>RESTORE PRESET</code></li>
+<li><strong>Syntax</strong>: <code>RESTORE PRESET &lt;slot&gt;</code></li>
+<li><strong>Description</strong>: Recall a stored preset slot</li>
+<li><strong>Parameters</strong>: slot</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+slot: integer
+</code></pre>
+
+<div id="ir-system-code-get"></div>
+
+<h3 id="ir-system-code-get">IR System Code / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET IR_SC</code></li>
+<li><strong>Syntax</strong>: <code>GET IR_SC</code></li>
+<li><strong>Description</strong>: Get the current IR system code</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+mode: string
+</code></pre>
+
+<div id="ir-system-code-set"></div>
+
+<h3 id="ir-system-code-set">IR System Code / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET IR_SC</code></li>
+<li><strong>Syntax</strong>: <code>SET IR_SC &lt;all|mode1|mode2&gt;</code></li>
+<li><strong>Description</strong>: Set the IR system code</li>
+<li><strong>Parameters</strong>: mode</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+mode: string
+</code></pre>
+
+<div id="ip-address-get"></div>
+
+<h3 id="ip-address-get">IP Address / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET IPADDR</code></li>
+<li><strong>Syntax</strong>: <code>GET IPADDR</code></li>
+<li><strong>Description</strong>: Get the current IP address, mask, and gateway</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+ip: string
+mask: string
+gateway: string
+</code></pre>
+
+<div id="ip-address-set"></div>
+
+<h3 id="ip-address-set">IP Address / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET IPADDR</code></li>
+<li><strong>Syntax</strong>: <code>SET IPADDR &lt;ip&gt; MASK &lt;mask&gt; GATEWAY &lt;gateway&gt;</code></li>
+<li><strong>Description</strong>: Set the static IP address values</li>
+<li><strong>Parameters</strong>: ip, mask, gateway</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+ip: string
+mask: string
+gateway: string
+</code></pre>
+
+<div id="network-mode-get"></div>
+
+<h3 id="network-mode-get">Network Mode / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET NETCFG MODE</code></li>
+<li><strong>Syntax</strong>: <code>GET NETCFG MODE</code></li>
+<li><strong>Description</strong>: Get the network configuration mode</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+mode: string
+</code></pre>
+
+<div id="network-mode-set"></div>
+
+<h3 id="network-mode-set">Network Mode / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET NETCFG MODE</code></li>
+<li><strong>Syntax</strong>: <code>SET NETCFG MODE &lt;DHCP|STATIC&gt;</code></li>
+<li><strong>Description</strong>: Set the network configuration mode</li>
+<li><strong>Parameters</strong>: mode</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+mode: string
+</code></pre>
+
+<div id="standby-get"></div>
+
+<h3 id="standby-get">Standby / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET STANDBY</code></li>
+<li><strong>Syntax</strong>: <code>GET STANDBY</code></li>
+<li><strong>Description</strong>: Get the current standby state</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+state: string
+</code></pre>
+
+<div id="standby-set"></div>
+
+<h3 id="standby-set">Standby / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>STANDBY / WAKE</code></li>
+<li><strong>Syntax</strong>: <code>STANDBY | WAKE</code></li>
+<li><strong>Description</strong>: Put the unit into standby or wake it</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+state: string
+</code></pre>
+
+<div id="input-status-connection"></div>
+
+<h3 id="input-status-connection">Input Status / Connection</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDIN_CONNECT</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDIN_CONNECT &lt;input&gt;</code></li>
+<li><strong>Description</strong>: Get whether an input is physically connected</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+state: string
+</code></pre>
+
+<div id="input-status-signal"></div>
+
+<h3 id="input-status-signal">Input Status / Signal</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDIN_SIG</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDIN_SIG &lt;input&gt;</code></li>
+<li><strong>Description</strong>: Get whether an input has a valid signal</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+state: string
+</code></pre>
+
+<div id="input-status-format"></div>
+
+<h3 id="input-status-format">Input Status / Format</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDIN_FORMAT</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDIN_FORMAT &lt;input&gt;</code></li>
+<li><strong>Description</strong>: Get the video format details for an input</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+format: string
+</code></pre>
+
+<div id="input-status-hdcp"></div>
+
+<h3 id="input-status-hdcp">Input Status / HDCP</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDIN_HDCP</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDIN_HDCP &lt;input&gt;</code></li>
+<li><strong>Description</strong>: Get the negotiated HDCP version on an input</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+hdcp: string
+</code></pre>
+
+<div id="input-status-stretch-get"></div>
+
+<h4 id="input-status-stretch-get">Input Status / Stretch / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDIN_STRETCH</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDIN_STRETCH &lt;input&gt;</code></li>
+<li><strong>Description</strong>: Get the legacy input stretch mode</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+mode: string
+</code></pre>
+
+<div id="input-status-stretch-set"></div>
+
+<h4 id="input-status-stretch-set">Input Status / Stretch / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDIN_STRETCH</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDIN_STRETCH &lt;input&gt; &lt;origin|full&gt;</code></li>
+<li><strong>Description</strong>: Set the legacy input stretch mode</li>
+<li><strong>Parameters</strong>: input, mode</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+input: string
+mode: string
+</code></pre>
+
+<div id="output-status-connection"></div>
+
+<h3 id="output-status-connection">Output Status / Connection</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_CONNECT</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_CONNECT &lt;output&gt;</code></li>
+<li><strong>Description</strong>: Get whether an output is physically connected</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="output-status-signal"></div>
+
+<h3 id="output-status-signal">Output Status / Signal</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_SIG</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_SIG &lt;output&gt;</code></li>
+<li><strong>Description</strong>: Get whether an output has a valid signal</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="output-status-video-format"></div>
+
+<h3 id="output-status-video-format">Output Status / Video Format</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_FORMAT</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_FORMAT &lt;output&gt;</code></li>
+<li><strong>Description</strong>: Get the video format details for an output</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+format: string
+</code></pre>
+
+<div id="output-status-audio-format"></div>
+
+<h3 id="output-status-audio-format">Output Status / Audio Format</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET AUDOUT_FORMAT</code></li>
+<li><strong>Syntax</strong>: <code>GET AUDOUT_FORMAT &lt;output&gt;</code></li>
+<li><strong>Description</strong>: Get the audio format details for an output</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+format: string
+</code></pre>
+
+<div id="output-status-hdcp"></div>
+
+<h3 id="output-status-hdcp">Output Status / HDCP</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_HDCP</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_HDCP &lt;output&gt;</code></li>
+<li><strong>Description</strong>: Get the negotiated HDCP version on an output</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+hdcp: string
+</code></pre>
+
+<div id="output-status-scaling-get"></div>
+
+<h4 id="output-status-scaling-get">Output Status / Scaling / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_SCALE</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_SCALE &lt;output|all&gt;</code></li>
+<li><strong>Description</strong>: Get the output scaler mode</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+mode: string
+</code></pre>
+
+<div id="output-status-scaling-set"></div>
+
+<h4 id="output-status-scaling-set">Output Status / Scaling / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDOUT_SCALE</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDOUT_SCALE &lt;output|all&gt; &lt;auto|manual|bypass&gt;</code></li>
+<li><strong>Description</strong>: Set the output scaler mode</li>
+<li><strong>Parameters</strong>: output, mode</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+mode: string
+</code></pre>
+
+<div id="output-status-resolution-get"></div>
+
+<h4 id="output-status-resolution-get">Output Status / Resolution / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_RES</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_RES &lt;output|all&gt;</code></li>
+<li><strong>Description</strong>: Get the configured output resolution</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+resolution: string
+</code></pre>
+
+<div id="output-status-resolution-set"></div>
+
+<h4 id="output-status-resolution-set">Output Status / Resolution / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDOUT_RES</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDOUT_RES &lt;output|all&gt; &lt;resolution&gt;</code></li>
+<li><strong>Description</strong>: Set the output resolution when scaling is manual</li>
+<li><strong>Parameters</strong>: output, resolution</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+resolution: string
+</code></pre>
+
+<div id="output-status-forced-sdr-get"></div>
+
+<h4 id="output-status-forced-sdr-get">Output Status / Forced SDR / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET FORCED_SDR</code></li>
+<li><strong>Syntax</strong>: <code>GET FORCED_SDR &lt;output&gt;</code></li>
+<li><strong>Description</strong>: Get the forced SDR state of an output</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="output-status-forced-sdr-set"></div>
+
+<h4 id="output-status-forced-sdr-set">Output Status / Forced SDR / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET FORCED_SDR</code></li>
+<li><strong>Syntax</strong>: <code>SET FORCED_SDR &lt;output&gt; &lt;on|off&gt;</code></li>
+<li><strong>Description</strong>: Enable or disable forced SDR on an output</li>
+<li><strong>Parameters</strong>: output, state</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="output-status-active-get"></div>
+
+<h4 id="output-status-active-get">Output Status / Active / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_ACTIVE</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_ACTIVE &lt;mv1|vw1|vw2|vw3&gt;</code></li>
+<li><strong>Description</strong>: Get whether a multiview or videowall profile is active</li>
+<li><strong>Parameters</strong>: output_id</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output_id: string
+state: string
+</code></pre>
+
+<div id="output-status-active-set"></div>
+
+<h4 id="output-status-active-set">Output Status / Active / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDOUT_ACTIVE</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDOUT_ACTIVE &lt;mv1|vw1|vw2|vw3&gt; &lt;ON|OFF&gt;</code></li>
+<li><strong>Description</strong>: Enable or disable a multiview or videowall profile</li>
+<li><strong>Parameters</strong>: output_id, state</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output_id: string
+state: string
+</code></pre>
+
+<div id="output-status-mode-get"></div>
+
+<h4 id="output-status-mode-get">Output Status / Mode / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_MODE</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_MODE [output_id]</code></li>
+<li><strong>Description</strong>: Get the scene summary or the scene for one multiview or videowall profile</li>
+<li><strong>Parameters</strong>: output_id</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output_id: string
+scene: string
+</code></pre>
+
+<div id="output-status-mode-set"></div>
+
+<h4 id="output-status-mode-set">Output Status / Mode / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDOUT_MODE</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDOUT_MODE &lt;output_id&gt; &lt;scene&gt;</code></li>
+<li><strong>Description</strong>: Set the active multiview or videowall scene</li>
+<li><strong>Parameters</strong>: output_id, scene</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output_id: string
+scene: string
+</code></pre>
+
+<div id="videowall-window-source-get"></div>
+
+<h3 id="videowall-window-source-get">Videowall Window Source / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VW_WIN_SRC</code></li>
+<li><strong>Syntax</strong>: <code>GET VW_WIN_SRC &lt;vw&gt; &lt;layout&gt; [window_refs...]</code></li>
+<li><strong>Description</strong>: Get source assignments for a videowall layout</li>
+<li><strong>Parameters</strong>: videowall, layout, window_refs</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+videowall: string
+layout: string
+mapping: string
+</code></pre>
+
+<div id="videowall-window-source-set"></div>
+
+<h3 id="videowall-window-source-set">Videowall Window Source / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VW_WIN_SRC</code></li>
+<li><strong>Syntax</strong>: <code>SET VW_WIN_SRC &lt;vw&gt; &lt;layout&gt; &lt;winref1&gt; &lt;src1&gt; [&lt;winref2&gt; &lt;src2&gt; ...]</code></li>
+<li><strong>Description</strong>: Assign sources to windows in a videowall layout</li>
+<li><strong>Parameters</strong>: videowall, layout, window_source_pairs</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+videowall: string
+layout: string
+mapping: string
+</code></pre>
+
+<div id="multiview-window-source-get"></div>
+
+<h3 id="multiview-window-source-get">Multiview Window Source / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET MV_WIN_SRC</code></li>
+<li><strong>Syntax</strong>: <code>GET MV_WIN_SRC &lt;mv&gt; &lt;scene&gt;</code></li>
+<li><strong>Description</strong>: Get source assignments for a multiview scene</li>
+<li><strong>Parameters</strong>: multiview, scene</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+multiview: string
+scene: string
+mapping: string
+</code></pre>
+
+<div id="multiview-window-source-set"></div>
+
+<h3 id="multiview-window-source-set">Multiview Window Source / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET MV_WIN_SRC</code></li>
+<li><strong>Syntax</strong>: <code>SET MV_WIN_SRC &lt;mv&gt; &lt;scene&gt; &lt;win1&gt; &lt;src1&gt; [&lt;win2&gt; &lt;src2&gt; ...]</code></li>
+<li><strong>Description</strong>: Assign sources to windows in a multiview scene</li>
+<li><strong>Parameters</strong>: multiview, scene, window_source_pairs</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+multiview: string
+scene: string
+mapping: string
+</code></pre>
+
+<div id="multiview-audio-switch-get"></div>
+
+<h3 id="multiview-audio-switch-get">Multiview Audio Switch / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET MV_AUDIO_SW</code></li>
+<li><strong>Syntax</strong>: <code>GET MV_AUDIO_SW &lt;mv&gt; &lt;scene&gt;</code></li>
+<li><strong>Description</strong>: Get multiview audio routing</li>
+<li><strong>Parameters</strong>: multiview, scene</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+multiview: string
+scene: string
+audio_mode: string
+source: string
+</code></pre>
+
+<div id="multiview-audio-switch-set"></div>
+
+<h3 id="multiview-audio-switch-set">Multiview Audio Switch / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET MV_AUDIO_SW</code></li>
+<li><strong>Syntax</strong>: <code>SET MV_AUDIO_SW &lt;mv&gt; &lt;scene&gt; &lt;WINDOW|INDEPENDENT&gt; &lt;source&gt;</code></li>
+<li><strong>Description</strong>: Set multiview audio routing</li>
+<li><strong>Parameters</strong>: multiview, scene, audio_mode, source</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+multiview: string
+scene: string
+audio_mode: string
+source: string
+</code></pre>
+
+<div id="multiview-window-border-get"></div>
+
+<h3 id="multiview-window-border-get">Multiview Window Border / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET MV_WIN_BORDER_FN</code></li>
+<li><strong>Syntax</strong>: <code>GET MV_WIN_BORDER_FN &lt;output_id&gt; &lt;scene&gt;</code></li>
+<li><strong>Description</strong>: Get border enable states for a scene</li>
+<li><strong>Parameters</strong>: output_id, scene</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output_id: string
+scene: string
+borders: string
+</code></pre>
+
+<div id="multiview-window-border-set"></div>
+
+<h3 id="multiview-window-border-set">Multiview Window Border / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET MV_WIN_BORDER_FN</code></li>
+<li><strong>Syntax</strong>: <code>SET MV_WIN_BORDER_FN &lt;output_id&gt; &lt;scene&gt; &lt;win1&gt; &lt;ON|OFF&gt; [&lt;win2&gt; &lt;ON|OFF&gt; ...]</code></li>
+<li><strong>Description</strong>: Enable or disable borders on one or more windows</li>
+<li><strong>Parameters</strong>: output_id, scene, window_state_pairs</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output_id: string
+scene: string
+borders: string
+</code></pre>
+
+<div id="multiview-window-border-attr-get"></div>
+
+<h3 id="multiview-window-border-attr-get">Multiview Window Border Attr / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET MV_WIN_BORDER_ATTR</code></li>
+<li><strong>Syntax</strong>: <code>GET MV_WIN_BORDER_ATTR &lt;output_id&gt; &lt;scene&gt; [window_ref]</code></li>
+<li><strong>Description</strong>: Get border color and width for a scene or one window</li>
+<li><strong>Parameters</strong>: output_id, scene, window_ref</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output_id: string
+scene: string
+borders: string
+</code></pre>
+
+<div id="multiview-window-border-attr-set"></div>
+
+<h3 id="multiview-window-border-attr-set">Multiview Window Border Attr / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET MV_WIN_BORDER_ATTR</code></li>
+<li><strong>Syntax</strong>: <code>SET MV_WIN_BORDER_ATTR &lt;output_id&gt; &lt;scene&gt; &lt;win1&gt; &lt;color;width&gt; [&lt;win2&gt; &lt;color;width&gt; ...]</code></li>
+<li><strong>Description</strong>: Set border color and width for one or more windows</li>
+<li><strong>Parameters</strong>: output_id, scene, window_attr_pairs</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output_id: string
+scene: string
+borders: string
+</code></pre>
+
+<div id="legacy-multiview-layout-get"></div>
+
+<h4 id="legacy-multiview-layout-get">Legacy Multiview / Layout / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_MODE</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_MODE</code></li>
+<li><strong>Description</strong>: Get the legacy global multiview layout mode</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+mode: string
+</code></pre>
+
+<div id="legacy-multiview-layout-set"></div>
+
+<h4 id="legacy-multiview-layout-set">Legacy Multiview / Layout / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDOUT_MODE</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDOUT_MODE &lt;0|1|2|4|5&gt;</code></li>
+<li><strong>Description</strong>: Set the legacy global multiview layout mode</li>
+<li><strong>Parameters</strong>: mode</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+mode: integer
+</code></pre>
+
+<div id="legacy-multiview-dual-source-get"></div>
+
+<h4 id="legacy-multiview-dual-source-get">Legacy Multiview / Dual Source / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_DUAL_SRC</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_DUAL_SRC</code></li>
+<li><strong>Description</strong>: Get the legacy dual-view source assignment</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+sources: string
+</code></pre>
+
+<div id="legacy-multiview-dual-source-set"></div>
+
+<h4 id="legacy-multiview-dual-source-set">Legacy Multiview / Dual Source / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDOUT_DUAL_SRC</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDOUT_DUAL_SRC &lt;left_input&gt; &lt;right_input&gt;</code></li>
+<li><strong>Description</strong>: Set the legacy dual-view source assignment</li>
+<li><strong>Parameters</strong>: left_input, right_input</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+sources: string
+</code></pre>
+
+<div id="legacy-multiview-pip-source-get"></div>
+
+<h4 id="legacy-multiview-pip-source-get">Legacy Multiview / Pip Source / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_PIP_SRC</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_PIP_SRC</code></li>
+<li><strong>Description</strong>: Get the legacy PIP source assignment</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+sources: string
+</code></pre>
+
+<div id="legacy-multiview-pip-source-set"></div>
+
+<h4 id="legacy-multiview-pip-source-set">Legacy Multiview / Pip Source / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDOUT_PIP_SRC</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDOUT_PIP_SRC &lt;main_input&gt; &lt;pip_input&gt;</code></li>
+<li><strong>Description</strong>: Set the legacy PIP source assignment</li>
+<li><strong>Parameters</strong>: main_input, pip_input</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+sources: string
+</code></pre>
+
+<div id="legacy-multiview-quad-source-get"></div>
+
+<h4 id="legacy-multiview-quad-source-get">Legacy Multiview / Quad Source / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_QUAD_SRC</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_QUAD_SRC</code></li>
+<li><strong>Description</strong>: Get the legacy quad-view source assignment</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+sources: string
+</code></pre>
+
+<div id="legacy-multiview-quad-source-set"></div>
+
+<h4 id="legacy-multiview-quad-source-set">Legacy Multiview / Quad Source / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDOUT_QUAD_SRC</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDOUT_QUAD_SRC &lt;tl&gt; &lt;tr&gt; &lt;bl&gt; &lt;br&gt;</code></li>
+<li><strong>Description</strong>: Set the legacy quad-view source assignment</li>
+<li><strong>Parameters</strong>: top_left, top_right, bottom_left, bottom_right</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+sources: string
+</code></pre>
+
+<div id="legacy-multiview-master-source-get"></div>
+
+<h4 id="legacy-multiview-master-source-get">Legacy Multiview / Master Source / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_MASTER_SRC</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_MASTER_SRC</code></li>
+<li><strong>Description</strong>: Get the legacy master-view source assignment</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+sources: string
+</code></pre>
+
+<div id="legacy-multiview-master-source-set"></div>
+
+<h4 id="legacy-multiview-master-source-set">Legacy Multiview / Master Source / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDOUT_MASTER_SRC</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDOUT_MASTER_SRC &lt;left&gt; &lt;top_right&gt; &lt;middle_right&gt; &lt;bottom_right&gt;</code></li>
+<li><strong>Description</strong>: Set the legacy master-view source assignment</li>
+<li><strong>Parameters</strong>: left, top_right, middle_right, bottom_right</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+sources: string
+</code></pre>
+
+<div id="legacy-multiview-pip-size-get"></div>
+
+<h4 id="legacy-multiview-pip-size-get">Legacy Multiview / Pip Size / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_PIP_SIZE</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_PIP_SIZE</code></li>
+<li><strong>Description</strong>: Get the legacy PIP window size</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+size: integer
+</code></pre>
+
+<div id="legacy-multiview-pip-size-set"></div>
+
+<h4 id="legacy-multiview-pip-size-set">Legacy Multiview / Pip Size / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDOUT_PIP_SIZE</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDOUT_PIP_SIZE &lt;0|1|2&gt;</code></li>
+<li><strong>Description</strong>: Set the legacy PIP window size</li>
+<li><strong>Parameters</strong>: size</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+size: integer
+</code></pre>
+
+<div id="legacy-multiview-pip-position-get"></div>
+
+<h4 id="legacy-multiview-pip-position-get">Legacy Multiview / Pip Position / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDOUT_PIP_POS</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDOUT_PIP_POS</code></li>
+<li><strong>Description</strong>: Get the legacy PIP window position</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+position: integer
+</code></pre>
+
+<div id="legacy-multiview-pip-position-set"></div>
+
+<h4 id="legacy-multiview-pip-position-set">Legacy Multiview / Pip Position / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDOUT_PIP_POS</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDOUT_PIP_POS &lt;0|1|2|3&gt;</code></li>
+<li><strong>Description</strong>: Set the legacy PIP window position</li>
+<li><strong>Parameters</strong>: position</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+position: integer
+</code></pre>
+
+<div id="legacy-videowall-wall-map-get"></div>
+
+<h4 id="legacy-videowall-wall-map-get">Legacy Videowall / Wall Map / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDWALL</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDWALL</code></li>
+<li><strong>Description</strong>: Get the legacy videowall source and output tile map</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+mapping: string
+</code></pre>
+
+<div id="legacy-videowall-wall-map-set"></div>
+
+<h4 id="legacy-videowall-wall-map-set">Legacy Videowall / Wall Map / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDWALL</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDWALL &lt;input&gt; &lt;top_left&gt; &lt;top_right&gt; &lt;bottom_left&gt; &lt;bottom_right&gt;</code></li>
+<li><strong>Description</strong>: Set the legacy videowall source and output tile map</li>
+<li><strong>Parameters</strong>: input, top_left, top_right, bottom_left, bottom_right</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+mapping: string
+</code></pre>
+
+<div id="legacy-videowall-mode-get"></div>
+
+<h4 id="legacy-videowall-mode-get">Legacy Videowall / Mode / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDMODE</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDMODE</code></li>
+<li><strong>Description</strong>: Get the legacy global video mode</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+mode: string
+</code></pre>
+
+<div id="legacy-videowall-mode-set"></div>
+
+<h4 id="legacy-videowall-mode-set">Legacy Videowall / Mode / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDMODE</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDMODE &lt;Matrix|VideoWall|MultiView&gt;</code></li>
+<li><strong>Description</strong>: Set the legacy global video mode</li>
+<li><strong>Parameters</strong>: mode</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+mode: string
+</code></pre>
+
+<div id="legacy-videowall-bezel-get"></div>
+
+<h4 id="legacy-videowall-bezel-get">Legacy Videowall / Bezel / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDWALLBEZEL</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDWALLBEZEL</code></li>
+<li><strong>Description</strong>: Get the legacy videowall bezel compensation values</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+bezel: string
+</code></pre>
+
+<div id="legacy-videowall-bezel-set"></div>
+
+<h4 id="legacy-videowall-bezel-set">Legacy Videowall / Bezel / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDWALLBEZEL</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDWALLBEZEL &lt;vw&gt; &lt;ow&gt; &lt;vh&gt; &lt;oh&gt;</code></li>
+<li><strong>Description</strong>: Set the legacy videowall bezel compensation values</li>
+<li><strong>Parameters</strong>: view_width, outer_width, view_height, outer_height</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+bezel: string
+</code></pre>
+
+<div id="legacy-videowall-rotation-get"></div>
+
+<h4 id="legacy-videowall-rotation-get">Legacy Videowall / Rotation / Get</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VIDWALL_ROTATION</code></li>
+<li><strong>Syntax</strong>: <code>GET VIDWALL_ROTATION &lt;output&gt;</code></li>
+<li><strong>Description</strong>: Get legacy 180-degree rotation for one output</li>
+<li><strong>Parameters</strong>: output</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="legacy-videowall-rotation-set"></div>
+
+<h4 id="legacy-videowall-rotation-set">Legacy Videowall / Rotation / Set</h4>
+
+<ul>
+<li><strong>Command</strong>: <code>SET VIDWALL_ROTATION</code></li>
+<li><strong>Syntax</strong>: <code>SET VIDWALL_ROTATION &lt;output&gt; &lt;enable|disable&gt;</code></li>
+<li><strong>Description</strong>: Set legacy 180-degree rotation for one output</li>
+<li><strong>Parameters</strong>: output, state</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+output: string
+state: string
+</code></pre>
+
+<div id="audio-follow-window-get"></div>
+
+<h3 id="audio-follow-window-get">Audio Follow Window / Get</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET AUDOUT_WND</code></li>
+<li><strong>Syntax</strong>: <code>GET AUDOUT_WND</code></li>
+<li><strong>Description</strong>: Get the legacy audio-follow window source</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+input: string
+</code></pre>
+
+<div id="audio-follow-window-set"></div>
+
+<h3 id="audio-follow-window-set">Audio Follow Window / Set</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>SET AUDOUT_WND</code></li>
+<li><strong>Syntax</strong>: <code>SET AUDOUT_WND &lt;input&gt;</code></li>
+<li><strong>Description</strong>: Set the legacy audio-follow window source</li>
+<li><strong>Parameters</strong>: input</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<pre><code>
+input: string
+</code></pre>
+
+<div id="system-firmware-version"></div>
+
+<h3 id="system-firmware-version">System / Firmware Version</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET VER</code></li>
+<li><strong>Syntax</strong>: <code>GET VER</code></li>
+<li><strong>Description</strong>: Get the firmware version</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+firmware: string
+</code></pre>
+
+<div id="system-hardware-version"></div>
+
+<h3 id="system-hardware-version">System / Hardware Version</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>GET HW_VER</code></li>
+<li><strong>Syntax</strong>: <code>GET HW_VER</code></li>
+<li><strong>Description</strong>: Get the hardware version</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+hardware: string
+</code></pre>
+
+<div id="system-factory-reset"></div>
+
+<h3 id="system-factory-reset">System / Factory Reset</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>RESET</code></li>
+<li><strong>Syntax</strong>: <code>RESET</code></li>
+<li><strong>Description</strong>: Restore the unit to factory defaults</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<div id="system-reboot"></div>
+
+<h3 id="system-reboot">System / Reboot</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>REBOOT</code></li>
+<li><strong>Syntax</strong>: <code>REBOOT</code></li>
+<li><strong>Description</strong>: Reboot the unit</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: confirmation</li>
+</ul>
+
+<div id="system-api-help"></div>
+
+<h3 id="system-api-help">System / API Help</h3>
+
+<ul>
+<li><strong>Command</strong>: <code>help</code></li>
+<li><strong>Syntax</strong>: <code>help</code></li>
+<li><strong>Description</strong>: Print the device command list</li>
+<li><strong>Parameters</strong>: None</li>
+<li><strong>Response Type</strong>: string</li>
+</ul>
+
+<pre><code>
+commands: string
+</code></pre>
+</body>
+</html>
