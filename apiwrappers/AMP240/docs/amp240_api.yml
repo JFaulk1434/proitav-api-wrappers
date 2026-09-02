@@ -1,0 +1,520 @@
+module: amp240
+description: AMP-240-000 telnet API commands
+
+schema:
+  command:
+    required:
+      - command
+      - syntax
+      - description
+      - response
+    properties:
+      command: string
+      syntax: string
+      description: string
+      parameters: list
+      response:
+        type: string
+        schema: object
+
+commands:
+  dsp_mix:
+    set:
+      command: "SET DSP_MIX"
+      syntax: "SET DSP_MIX <out_port> <in_port> <value>"
+      description: "Set DSP matrix crosspoint state."
+      parameters: [out_port, in_port, value]
+      response:
+        type: string
+        schema: {}
+    get:
+      command: "GET DSP_MIX"
+      syntax: "GET DSP_MIX <out_port> <in_port>"
+      description: "Get DSP matrix crosspoint state."
+      parameters: [out_port, in_port]
+      response:
+        type: string
+        schema: {}
+
+  dsp_exp:
+    set:
+      command: "SET DSP_EXP"
+      syntax: "SET DSP_EXP <port> <value>"
+      description: "Set DSP expander status."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_EXP"
+      syntax: "GET DSP_EXP <port>"
+      description: "Get DSP expander status."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_exp_prop:
+    set:
+      command: "SET DSP_EXP_PROP"
+      syntax: "SET DSP_EXP_PROP <field_id> <port> <value>"
+      description: "Set DSP expander properties."
+      parameters: [field_id, port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_EXP_PROP"
+      syntax: "GET DSP_EXP_PROP <field_id> <port>"
+      description: "Get DSP expander properties."
+      parameters: [field_id, port]
+      response: { type: string, schema: {} }
+
+  dsp_in_hpf:
+    set:
+      command: "SET DSP_IN_HPF"
+      syntax: "SET DSP_IN_HPF <port> <value>"
+      description: "Set DSP input HPF status."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_IN_HPF"
+      syntax: "GET DSP_IN_HPF <port>"
+      description: "Get DSP input HPF status."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_in_hpf_prop:
+    set:
+      command: "SET DSP_IN_HPF_PROP"
+      syntax: "SET DSP_IN_HPF_PROP <port> <value>"
+      description: "Set DSP input HPF frequency."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_IN_HPF_PROP"
+      syntax: "GET DSP_IN_HPF_PROP <port>"
+      description: "Get DSP input HPF frequency."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_out_hpf:
+    set:
+      command: "SET DSP_OUT_HPF"
+      syntax: "SET DSP_OUT_HPF <port> <value>"
+      description: "Set DSP output HPF status."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_OUT_HPF"
+      syntax: "GET DSP_OUT_HPF <port>"
+      description: "Get DSP output HPF status."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_out_hpf_prop:
+    set:
+      command: "SET DSP_OUT_HPF_PROP"
+      syntax: "SET DSP_OUT_HPF_PROP <port> <value>"
+      description: "Set DSP output HPF frequency."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_OUT_HPF_PROP"
+      syntax: "GET DSP_OUT_HPF_PROP <port>"
+      description: "Get DSP output HPF frequency."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_comp:
+    set:
+      command: "SET DSP_COMP"
+      syntax: "SET DSP_COMP <port> <value>"
+      description: "Set DSP compressor status."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_COMP"
+      syntax: "GET DSP_COMP <port>"
+      description: "Get DSP compressor status."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_comp_prop:
+    set:
+      command: "SET DSP_COMP_PROP"
+      syntax: "SET DSP_COMP_PROP <field_id> <port> <value>"
+      description: "Set DSP compressor properties."
+      parameters: [field_id, port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_COMP_PROP"
+      syntax: "GET DSP_COMP_PROP <field_id> <port>"
+      description: "Get DSP compressor properties."
+      parameters: [field_id, port]
+      response: { type: string, schema: {} }
+
+  dsp_eq:
+    set:
+      command: "SET DSP_EQ"
+      syntax: "SET DSP_EQ <port> <value>"
+      description: "Set DSP equalizer status."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_EQ"
+      syntax: "GET DSP_EQ <port>"
+      description: "Get DSP equalizer status."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_eq_prop:
+    set:
+      command: "SET DSP_EQ_PROP"
+      syntax: "SET DSP_EQ_PROP <field> <port> <band> <value>"
+      description: "Set DSP EQ property."
+      parameters: [field, port, band, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_EQ_PROP"
+      syntax: "GET DSP_EQ_PROP <field> <port> <band>"
+      description: "Get DSP EQ property."
+      parameters: [field, port, band]
+      response: { type: string, schema: {} }
+
+  dsp_lpf:
+    set:
+      command: "SET DSP_LPF"
+      syntax: "SET DSP_LPF <port> <value>"
+      description: "Set DSP LPF status."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_LPF"
+      syntax: "GET DSP_LPF <port>"
+      description: "Get DSP LPF status."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_lpf_prop:
+    set:
+      command: "SET DSP_LPF_PROP"
+      syntax: "SET DSP_LPF_PROP <port> <value>"
+      description: "Set DSP LPF property."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_LPF_PROP"
+      syntax: "GET DSP_LPF_PROP <port>"
+      description: "Get DSP LPF property."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_duck:
+    set:
+      command: "SET DSP_DUCK"
+      syntax: "SET DSP_DUCK <port> <value>"
+      description: "Set DSP ducking status."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_DUCK"
+      syntax: "GET DSP_DUCK <port>"
+      description: "Get DSP ducking status."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_duck_prop:
+    set:
+      command: "SET DSP_DUCK_PROP"
+      syntax: "SET DSP_DUCK_PROP <field_id> <port> <value>"
+      description: "Set DSP ducking properties."
+      parameters: [field_id, port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_DUCK_PROP"
+      syntax: "GET DSP_DUCK_PROP <field_id> <port>"
+      description: "Get DSP ducking properties."
+      parameters: [field_id, port]
+      response: { type: string, schema: {} }
+
+  dsp_duck_pri:
+    set:
+      command: "SET DSP_DUCK_PRI"
+      syntax: "SET DSP_DUCK_PRI <port> <value>"
+      description: "Set DSP ducking priority source."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_DUCK_PRI"
+      syntax: "GET DSP_DUCK_PRI <port>"
+      description: "Get DSP ducking priority source."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_aud_gain_mute:
+    set:
+      command: "SET DSP_AUD_GAIN_MUTE"
+      syntax: "SET DSP_AUD_GAIN_MUTE <port> <value>"
+      description: "Set input audio mute."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_AUD_GAIN_MUTE"
+      syntax: "GET DSP_AUD_GAIN_MUTE <port>"
+      description: "Get input audio mute."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_aud_gain:
+    set:
+      command: "SET DSP_AUD_GAIN"
+      syntax: "SET DSP_AUD_GAIN <port> <value>"
+      description: "Set input audio gain."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_AUD_GAIN"
+      syntax: "GET DSP_AUD_GAIN <port>"
+      description: "Get input audio gain."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_aud_vol_mute:
+    set:
+      command: "SET DSP_AUD_VOL_MUTE"
+      syntax: "SET DSP_AUD_VOL_MUTE <port> <value>"
+      description: "Set output audio mute."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_AUD_VOL_MUTE"
+      syntax: "GET DSP_AUD_VOL_MUTE <port>"
+      description: "Get output audio mute."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_aud_vol:
+    set:
+      command: "SET DSP_AUD_VOL"
+      syntax: "SET DSP_AUD_VOL <port> <value>"
+      description: "Set output audio volume."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_AUD_VOL"
+      syntax: "GET DSP_AUD_VOL <port>"
+      description: "Get output audio volume."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_meter:
+    get_input:
+      command: "GET DSP_IN_METER"
+      syntax: "GET DSP_IN_METER <port>"
+      description: "Read input meter."
+      parameters: [port]
+      response: { type: string, schema: {} }
+    get_output:
+      command: "GET DSP_OUT_METER"
+      syntax: "GET DSP_OUT_METER <port>"
+      description: "Read output meter."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_link_lock:
+    set:
+      command: "SET DSP_LINK_LOCK"
+      syntax: "SET DSP_LINK_LOCK <port> <value>"
+      description: "Set DSP link lock."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_LINK_LOCK"
+      syntax: "GET DSP_LINK_LOCK <port>"
+      description: "Get DSP link lock."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  dsp_delay:
+    set_enable:
+      command: "SET DSP_DELAY_EN"
+      syntax: "SET DSP_DELAY_EN <port> <value>"
+      description: "Enable/disable DSP delay."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get_enable:
+      command: "GET DSP_DELAY_EN"
+      syntax: "GET DSP_DELAY_EN <port>"
+      description: "Get DSP delay enable state."
+      parameters: [port]
+      response: { type: string, schema: {} }
+    set:
+      command: "SET DSP_DELAY"
+      syntax: "SET DSP_DELAY <port> <value>"
+      description: "Set DSP delay value."
+      parameters: [port, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET DSP_DELAY"
+      syntax: "GET DSP_DELAY <port>"
+      description: "Get DSP delay value."
+      parameters: [port]
+      response: { type: string, schema: {} }
+
+  amp_mode:
+    command: "GET AMP_MODE"
+    syntax: "GET AMP_MODE"
+    description: "Get amplifier mode."
+    parameters: []
+    response: { type: string, schema: {} }
+
+  audin_type:
+    set:
+      command: "SET AUDIN_TYPE"
+      syntax: "SET AUDIN_TYPE <value>"
+      description: "Set input audio type."
+      parameters: [value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET AUDIN_TYPE"
+      syntax: "GET AUDIN_TYPE"
+      description: "Get input audio type."
+      parameters: []
+      response: { type: string, schema: {} }
+
+  vol_level_step:
+    set:
+      command: "SET VOL_LEVEL_STEP"
+      syntax: "SET VOL_LEVEL_STEP <value>"
+      description: "Set volume up/down step."
+      parameters: [value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET VOL_LEVEL_STEP"
+      syntax: "GET VOL_LEVEL_STEP"
+      description: "Get volume up/down step."
+      parameters: []
+      response: { type: string, schema: {} }
+
+  led_brightness:
+    set:
+      command: "SET LED_BRIGHTNESS"
+      syntax: "SET LED_BRIGHTNESS <value>"
+      description: "Set LED brightness."
+      parameters: [value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET LED_BRIGHTNESS"
+      syntax: "GET LED_BRIGHTNESS"
+      description: "Get LED brightness."
+      parameters: []
+      response: { type: string, schema: {} }
+
+  mic_pha_pwr:
+    set:
+      command: "SET MIC_PHA_PWR"
+      syntax: "SET MIC_PHA_PWR <channel> <value>"
+      description: "Set mic phantom power."
+      parameters: [channel, value]
+      response: { type: string, schema: {} }
+    get:
+      command: "GET MIC_PHA_PWR"
+      syntax: "GET MIC_PHA_PWR <channel>"
+      description: "Get mic phantom power."
+      parameters: [channel]
+      response: { type: string, schema: {} }
+
+  system:
+    reset:
+      command: "RESET"
+      syntax: "RESET"
+      description: "Factory reset."
+      parameters: []
+      response: { type: confirmation, schema: {} }
+    reboot:
+      command: "REBOOT"
+      syntax: "REBOOT"
+      description: "System reboot."
+      parameters: []
+      response: { type: confirmation, schema: {} }
+    get_ipaddr:
+      command: "GET IPADDR"
+      syntax: "GET IPADDR"
+      description: "Get IP address."
+      parameters: []
+      response: { type: string, schema: {} }
+    set_ipaddr:
+      command: "SET IPADDR"
+      syntax: "SET IPADDR <ip> MASK <mask> GATEWAY <gateway>"
+      description: "Set IP address, mask, and gateway."
+      parameters: [ip, mask, gateway]
+      response: { type: string, schema: {} }
+    set_netcfg_mode:
+      command: "SET NETCFG MODE"
+      syntax: "SET NETCFG MODE <value>"
+      description: "Set network config mode."
+      parameters: [value]
+      response: { type: string, schema: {} }
+    get_netcfg_mode:
+      command: "GET NETCFG MODE"
+      syntax: "GET NETCFG MODE"
+      description: "Get network config mode."
+      parameters: []
+      response: { type: string, schema: {} }
+    get_ver:
+      command: "GET VER"
+      syntax: "GET VER"
+      description: "Get firmware version."
+      parameters: []
+      response: { type: string, schema: {} }
+    get_hw_ver:
+      command: "GET HW_VER"
+      syntax: "GET HW_VER"
+      description: "Get hardware version."
+      parameters: []
+      response: { type: string, schema: {} }
+    help:
+      command: "help"
+      syntax: "help"
+      description: "Get API command list."
+      parameters: []
+      response: { type: string, schema: {} }
+
+  security:
+    set_https:
+      command: "SET HTTPS"
+      syntax: "SET HTTPS <value>"
+      description: "Set HTTPS service status."
+      parameters: [value]
+      response: { type: string, schema: {} }
+    get_https:
+      command: "GET HTTPS"
+      syntax: "GET HTTPS"
+      description: "Get HTTPS service status."
+      parameters: []
+      response: { type: string, schema: {} }
+    set_telnets:
+      command: "SET TELNETS"
+      syntax: "SET TELNETS <value>"
+      description: "Set TELNETS service status."
+      parameters: [value]
+      response: { type: string, schema: {} }
+    get_telnets:
+      command: "GET TELNETS"
+      syntax: "GET TELNETS"
+      description: "Get TELNETS service status."
+      parameters: []
+      response: { type: string, schema: {} }
+    set_api_pwd:
+      command: "SET API_PWD"
+      syntax: "SET API_PWD <old_password> <new_password> <verify_password>"
+      description: "Set API password for telnet command control."
+      parameters: [old_password, new_password, verify_password]
+      response: { type: string, schema: {} }
+    set_ssh:
+      command: "SET SSH"
+      syntax: "SET SSH <value>"
+      description: "Set SSH service status."
+      parameters: [value]
+      response: { type: string, schema: {} }
+    get_ssh:
+      command: "GET SSH"
+      syntax: "GET SSH"
+      description: "Get SSH service status."
+      parameters: []
+      response: { type: string, schema: {} }
